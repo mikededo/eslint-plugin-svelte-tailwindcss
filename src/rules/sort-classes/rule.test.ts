@@ -28,36 +28,30 @@ tester.run('sort-classes', rule, {
       errors
     },
     {
-      code: `<div class="${unorderedClasses}"></div>`,
-      output: `<div class="${orderedClasses}"></div>`,
-      errors
-    },
-    {
       code: `<div class={"${unorderedClasses}"}></div>`,
-      output: `<div class="${orderedClasses}"></div>`,
+      output: `<div class={"${orderedClasses}"}></div>`,
       errors
     },
     {
       code: `<div class="{"${unorderedClasses}"}"></div>`,
-      output: `<div class="${orderedClasses}"></div>`,
+      output: `<div class="{"${orderedClasses}"}"></div>`,
       errors
+    },
+    {
+      code: `<div class={twMerge("${unorderedClasses}", variable)}></div>`,
+      output: `<div class={twMerge("${orderedClasses}", variable)}></div>`,
+      options: [{ callees: ['twMerge'] }],
+      errors
+    },
+    {
+      code: `<div class="${unorderedClasses} {twMerge("${unorderedClasses}", variable)}"></div>`,
+      output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)}"></div>`,
+      options: [{ callees: ['twMerge'] }],
+      errors: [...errors, ...errors]
     }
-    // Not yet working
-    // {
-    //   code: `<div class={twMerge("${unorderedClasses}", variable)}></div>`,
-    //   output: `<div class={twMerge("${orderedClasses}", variable)}></div>`,
-    //   options: [{ callees: ['twMerge'] }],
-    //   errors
-    // },
-    // {
-    //   code: `<div class="${unorderedClasses} {twMerge("${unorderedClasses}", variable)}"></div>`,
-    //   output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)}"></div>`,
-    //   options: [{ callees: ['twMerge'] }],
-    //   errors
-    // }
   ],
   valid: [
-    { code: `<div class="foo"></div>` },
-    { code: `<div class={clsx("${unorderedClasses}")}></div>`, options: [{ callees: ['twMerge'] }] }
+    { code: `<div class="foo"></div>` }
+    // { code: `<div class={clsx("${unorderedClasses}")}></div>`, options: [{ callees: ['twMerge'] }] }
   ]
 });

@@ -1,6 +1,6 @@
 import type * as ESTree from 'estree';
-import type { AST } from 'svelte-eslint-parser';
 
+import type { AST } from 'svelte-eslint-parser';
 import type { LegacyTailwindContext, SVTPluginOptions } from '../../utils';
 import { createNamedRule, getOption, resolveConfig, sortClasses } from '../../utils';
 // @ts-expect-error Specific tailwindcss API
@@ -9,22 +9,9 @@ import { createContext } from 'tailwindcss/lib/lib/setupContextUtils';
 export type Options = Pick<
   SVTPluginOptions,
   'callees' | 'config' | 'removeDuplicates' | 'tags' | 'ignoredKeys'
->[];
+>;
+export type OptionList = Options[];
 export type MessageIds = 'sort-classes';
-
-const groupLiteralAndMoustaches = (literals: Array<AST.SvelteLiteral | AST.SvelteMustacheTag>) => {
-  const result: [AST.SvelteLiteral[], AST.SvelteMustacheTag[]] = [[], []];
-
-  literals.forEach((literal) => {
-    if (literal.type === 'SvelteLiteral') {
-      result[0].push(literal);
-    } else {
-      result[1].push(literal);
-    }
-  });
-
-  return result;
-};
 
 const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): string | null => {
   if (!literal.value || typeof literal.value !== 'string') {
@@ -37,7 +24,7 @@ const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): s
 type ResolvedConfig = NonNullable<ReturnType<typeof resolveConfig>>;
 export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
 
-export default createNamedRule<Options, MessageIds>({
+export default createNamedRule<OptionList, MessageIds>({
   meta: {
     docs: {
       description: 'Sort Tailwind CSS classes'
@@ -78,7 +65,6 @@ export default createNamedRule<Options, MessageIds>({
   name: 'sort-classes',
   defaultOptions: [{}],
   create(context) {
-    const { sourceCode } = context;
     const callees = getOption(context, 'callees');
     const twConfig = getOption(context, 'config');
     const mergedConfig = resolveConfig(twConfig);
@@ -86,7 +72,7 @@ export default createNamedRule<Options, MessageIds>({
       throw new Error('Could not resolve TailwindCSS config');
     }
 
-    const ctxFallback = (
+    const twContext = (
       ContextCache.has(mergedConfig)
         ? ContextCache
         : ContextCache.set(mergedConfig, createContext(mergedConfig))
@@ -98,79 +84,70 @@ export default createNamedRule<Options, MessageIds>({
           return;
         }
 
-        const [literals, mustaches] = groupLiteralAndMoustaches(node.value);
-        if (!literals.length && !mustaches.length) {
-          // In case the class attribute is empty
-          return;
-        }
+        node.value.forEach((expr) => {
+          if (expr.type === 'SvelteLiteral') {
+            const sortedValue = sortClasses(expr.value.split(' '), twContext);
+            if (sortedValue === expr.value) {
+              return;
+            }
 
-        if (literals.length === 0) {
-          // Case class={...}
-          const [first] = mustaches;
-          if (first.expression.type === 'Literal') {
+            context.report({
+              node: expr,
+              messageId: 'sort-classes',
+              fix: (fixer) => fixer.replaceTextRange(expr.range, sortedValue)
+            });
+
+            return;
+          }
+
+          if (expr.expression.type === 'Literal') {
+            // Case class={"..."}
             // Sort the literal
-            const sorted = sortLiteral(first.expression, ctxFallback);
-            if (sorted && sorted !== first.expression.value) {
+            const sorted = sortLiteral(expr.expression, twContext);
+            if (!sorted || sorted === expr.expression.value) {
+              return;
+            }
+
+            context.report({
+              node: expr,
+              messageId: 'sort-classes',
+              // While the {} are redundant, it's not the rule's task to
+              // ensure code cleanliness. In order to remove unnecessary
+              // brackets, use svelte/no-useless-mustaches from
+              // svelte-eslint-plugin
+              // https://sveltejs.github.io/eslint-plugin-svelte/rules/no-useless-mustaches/
+              fix: (fixer) => fixer.replaceTextRange(expr.range, `{"${sorted}"}`)
+            });
+          } else if (expr.expression.type === 'CallExpression' && 'name' in expr.expression.callee) {
+            // Case class={callee()}
+            // Check if the callee is one of the given calles
+            const included = callees.includes(expr.expression.callee.name);
+            if (!included) {
+              return;
+            }
+
+            expr.expression.arguments.forEach((arg) => {
+              if (arg.type !== 'Literal') {
+                return [];
+              }
+
+              const sorted = sortLiteral(arg, twContext);
+              if (!sorted || sorted === arg.value) {
+                return [];
+              }
+
               context.report({
-                node: first,
+                node: arg,
                 messageId: 'sort-classes',
                 // While the {} are redundant, it's not the rule's task to
                 // ensure code cleanliness. In order to remove unnecessary
                 // brackets, use svelte/no-useless-mustaches from
                 // svelte-eslint-plugin
                 // https://sveltejs.github.io/eslint-plugin-svelte/rules/no-useless-mustaches/
-                fix: (fixer) => fixer.replaceText(node, `class={"${sorted}"}`)
+                fix: (fixer) => fixer.replaceText(arg, `"${sorted}"`)
               });
-            }
-          } else if (first.expression.type === 'CallExpression' && 'name' in first.expression.callee) {
-            // Check if the callee is one of the given calles
-            const included = callees.includes(first.expression.callee.name);
-            if (!included) {
-              return;
-            }
-
-            first.expression.arguments.forEach((arg) => {
-              if (arg.type !== 'Literal') {
-                return;
-              }
-
-              const sorted = sortLiteral(arg, ctxFallback);
-              if (sorted && sorted !== arg.value) {
-                context.report({
-                  node: arg,
-                  messageId: 'sort-classes',
-                  // While the {} are redundant, it's not the rule's task to
-                  // ensure code cleanliness. In order to remove unnecessary
-                  // brackets, use svelte/no-useless-mustaches from
-                  // svelte-eslint-plugin
-                  // https://sveltejs.github.io/eslint-plugin-svelte/rules/no-useless-mustaches/
-                  fix: (fixer) => fixer.replaceText(arg, `"${sorted}"`)
-                });
-              }
             });
           }
-
-          return;
-        }
-
-        const sorted = sortClasses(literals.map(({ value }) => value.trim()), ctxFallback);
-        // Append moustaches
-        const sortedWithMoustaches = mustaches.reduce((acc, node) => `${acc} ${sourceCode.getText(node)}`.trim(), sorted);
-
-        const [_, content] = sourceCode.getText(node).split('"') ?? [];
-        if (!content) {
-          // Safe check
-          return;
-        }
-        if (sortedWithMoustaches === content) {
-          // Classes are already sorted
-          return;
-        }
-
-        context.report({
-          node,
-          messageId: 'sort-classes',
-          fix: (fixer) => fixer.replaceText(node, `class="${sortedWithMoustaches}"`)
         });
       }
     };
