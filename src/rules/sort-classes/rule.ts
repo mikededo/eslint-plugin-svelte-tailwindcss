@@ -21,6 +21,39 @@ const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): s
   return sortClasses(literal.value?.split(' '), context);
 };
 
+/**
+ * Assumes `original` is already sorted
+ */
+const removeDuplicatesOrOriginal = (
+  original: string,
+  removeDuplicates: boolean = false,
+  trim: boolean = true
+): string => {
+  if (!removeDuplicates) {
+    return original;
+  }
+
+  const splitted = original.split(' ');
+  let result = '';
+  let last = '';
+  for (let i = 0; i < splitted.length; i++) {
+    const value = splitted[i];
+    if (!value) {
+      continue;
+    }
+    if (value === last) {
+      continue;
+    }
+    last = value;
+    result += `${value} `;
+  }
+
+  if (result[result.length - 1] === ' ' && trim) {
+    return result.slice(0, -1);
+  }
+  return result;
+};
+
 type ResolvedConfig = NonNullable<ReturnType<typeof resolveConfig>>;
 export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
 
@@ -67,6 +100,7 @@ export default createNamedRule<OptionList, MessageIds>({
   create(context) {
     const callees = getOption(context, 'callees');
     const twConfig = getOption(context, 'config');
+    const removeDuplicates = getOption(context, 'removeDuplicates');
     const mergedConfig = resolveConfig(twConfig);
     if (mergedConfig === null) {
       throw new Error('Could not resolve TailwindCSS config');
@@ -84,9 +118,13 @@ export default createNamedRule<OptionList, MessageIds>({
           return;
         }
 
-        node.value.forEach((expr) => {
+        node.value.forEach((expr, i) => {
           if (expr.type === 'SvelteLiteral') {
-            const sortedValue = sortClasses(expr.value.split(' '), twContext);
+            const sortedValue = removeDuplicatesOrOriginal(
+              sortClasses(expr.value.split(' '), twContext) ?? '',
+              removeDuplicates,
+              i === node.value.length - 1
+            );
             if (sortedValue === expr.value) {
               return;
             }
@@ -103,7 +141,11 @@ export default createNamedRule<OptionList, MessageIds>({
           if (expr.expression.type === 'Literal') {
             // Case class={"..."}
             // Sort the literal
-            const sorted = sortLiteral(expr.expression, twContext);
+            const sorted = removeDuplicatesOrOriginal(
+              sortLiteral(expr.expression, twContext) ?? '',
+              removeDuplicates,
+              i === node.value.length - 1
+            );
             if (!sorted || sorted === expr.expression.value) {
               return;
             }
@@ -128,12 +170,16 @@ export default createNamedRule<OptionList, MessageIds>({
 
             expr.expression.arguments.forEach((arg) => {
               if (arg.type !== 'Literal') {
-                return [];
+                return;
               }
 
-              const sorted = sortLiteral(arg, twContext);
+              const sorted = removeDuplicatesOrOriginal(
+                sortLiteral(arg, twContext) ?? '',
+                removeDuplicates,
+                i === node.value.length - 1
+              );
               if (!sorted || sorted === arg.value) {
-                return [];
+                return;
               }
 
               context.report({
