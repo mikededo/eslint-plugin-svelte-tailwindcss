@@ -1,0 +1,55 @@
+{
+  "name": "eslint-plugin-svelte-tailwindcss",
+  "version": "0.0.1",
+  "packageManager": "bun@1.1.33",
+  "description": "ESLint plugin for Svelte and Tailwind CSS",
+  "license": "MIT",
+  "author": "Miquel De Domingo",
+  "homepage": "https://github.com/mikededo/eslint-plugin-svelte-tailwindcss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikededo/eslint-plugin-svelte-tailwindcss.git"
+  },
+  "bugs": "https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/issues",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "svelte",
+    "tailwindcss",
+    "tailwind",
+    "tailwindcss-svelte",
+    "eslint-plugin-svelte",
+    "eslint-plugin-tailwindcss",
+    "eslint-plugin-tailwind",
+    "eslint-plugin-tailwindcss-svelte"
+  ],
+  "module": "src/index.ts",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "test": "vitest run --reporter=dot ."
+  },
+  "exports": {
+    "types": "./src/index.ts",
+    "import": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "3.8.0",
+    "@sveltejs/vite-plugin-svelte": "4.0.0",
+    "@types/bun": "latest",
+    "@types/eslint": "9.6.1",
+    "@types/node": "22.9.0",
+    "@typescript-eslint/parser": "8.14.0",
+    "eslint": "9.14.0",
+    "eslint-plugin-format": "0.1.2",
+    "svelte": "5.1.15",
+    "svelte-eslint-parser": "0.43.0",
+    "tailwindcss": "3.4.14",
+    "vite": "5.4.11",
+    "vitest": "2.1.4"
+  },
+  "peerDependencies": {
+    "typescript": "5.6.3"
+  },
+  "dependencies": {}
+}
