@@ -1,9 +1,9 @@
 ![Logo](.github/logo.png)
 
-ESLint plugin for enforcing rules anc consistency for TailwindCSS. This project
-is a similar to [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss),
-but since the plugin does not have direct support for Svelte, this project was
-created.
+An ESLint plugin for enforcing rules and ensuring consistency in Tailwind CSS.
+This project is similar to [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss),
+but since that plugin does not provide direct support for Svelte, this project
+was created to fill the gap.
 
 ## Attributions
 
@@ -13,4 +13,4 @@ This plugin is heavily inspired by:
 - [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
 - [eslint-plugin-antfu](https://github.com/antfu/eslint-plugin-antfu)
 
-Make sure to check them out if you are looking for more information!
+Be sure to check them out if you're looking for more information or related functionality!
