@@ -1,10 +1,11 @@
 {
   "name": "eslint-plugin-svelte-tailwindcss",
+  "type": "module",
   "version": "0.0.1",
   "packageManager": "bun@1.1.33",
   "description": "ESLint plugin for Svelte and Tailwind CSS",
-  "license": "MIT",
   "author": "Miquel De Domingo",
+  "license": "MIT",
   "homepage": "https://github.com/mikededo/eslint-plugin-svelte-tailwindcss",
   "repository": {
     "type": "git",
@@ -23,15 +24,33 @@
     "eslint-plugin-tailwind",
     "eslint-plugin-tailwindcss-svelte"
   ],
-  "module": "src/index.ts",
-  "type": "module",
   "sideEffects": false,
-  "scripts": {
-    "test": "vitest run --reporter=dot ."
-  },
   "exports": {
-    "types": "./src/index.ts",
-    "import": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
+    "update": "bun run scripts/gen.ts",
+    "test": "vitest run --reporter=dot .",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "tailwindcss": "3.4.14"
   },
   "devDependencies": {
     "@antfu/eslint-config": "3.8.0",
@@ -44,12 +63,8 @@
     "eslint-plugin-format": "0.1.2",
     "svelte": "5.1.15",
     "svelte-eslint-parser": "0.43.0",
-    "tailwindcss": "3.4.14",
+    "unbuild": "2.0.0",
     "vite": "5.4.11",
     "vitest": "2.1.4"
-  },
-  "peerDependencies": {
-    "typescript": "5.6.3"
-  },
-  "dependencies": {}
+  }
 }

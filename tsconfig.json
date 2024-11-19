@@ -12,6 +12,5 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": ["vendor"]
+  "include": ["src"]
 }
