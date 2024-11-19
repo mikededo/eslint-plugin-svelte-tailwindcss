@@ -4,6 +4,12 @@ export default defineBuildConfig({
   clean: true,
   declaration: true,
   entries: ['src/index'],
-  externals: ['eslint', '@typescript-eslint/utils', '@typescript-eslint/scope-manager', 'svelte-eslint-parser'],
+  externals: [
+    '@typescript-eslint/scope-manager',
+    '@typescript-eslint/utils',
+    'eslint',
+    'svelte-eslint-parser',
+    'typescript'
+  ],
   rollup: { emitCJS: true }
 });
