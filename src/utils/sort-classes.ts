@@ -2,11 +2,11 @@ import type { LegacyTailwindContext } from './types';
 
 type TransformerEnv = {
   context: LegacyTailwindContext;
+  parsers?: any;
   generateRules?: (
     classes: Iterable<string>,
     context: LegacyTailwindContext,
   ) => [bigint][];
-  parsers?: any;
 };
 
 const bigSign = (value: bigint) =>

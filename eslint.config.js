@@ -1,4 +1,5 @@
 import antfu from '@antfu/eslint-config';
+import perfectionist from 'eslint-plugin-perfectionist';
 
 export default antfu({
   formatters: {
@@ -12,7 +13,7 @@ export default antfu({
     'node_modules/',
     'tsconfig.tsbuildinfo'
   ],
-  jsonc: false,
+  jsonc: true,
   lessOpinionated: true,
   markdown: false,
   stylistic: {
@@ -24,18 +25,6 @@ export default antfu({
   typescript: {
     overrides: {
       'no-use-before-define': 'off',
-      'unused-imports/no-unused-vars': [
-        'error',
-        {
-          args: 'all',
-          argsIgnorePattern: '^_',
-          caughtErrors: 'all',
-          caughtErrorsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-          varsIgnorePattern: '^_'
-        }
-      ],
       'ts/consistent-type-definitions': ['error', 'type'],
       'ts/consistent-type-imports': ['error', {
         disallowTypeAnnotations: false,
@@ -61,7 +50,19 @@ export default antfu({
         ignoreTypeReferences: true,
         typedefs: false,
         variables: true
-      }]
+      }],
+      'unused-imports/no-unused-vars': [
+        'error',
+        {
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+          varsIgnorePattern: '^_'
+        }
+      ]
     }
   },
   yaml: false
@@ -94,4 +95,63 @@ export default antfu({
         'style/quote-props': ['error', 'as-needed']
       }
     }
+  )
+  .override(
+    'antfu/perfectionist/setup',
+    {
+      rules: {
+        ...(perfectionist.configs['recommended-alphabetical'].rules ?? {}),
+        'perfectionist/sort-exports': [
+          'error',
+          {
+            ignoreCase: true,
+            order: 'asc',
+            type: 'alphabetical'
+          }
+        ],
+        'perfectionist/sort-imports': [
+          'error',
+          {
+            customGroups: {
+              type: { 'repo-type': ['@stack/**'] },
+              value: { repo: ['@stack/**'], style: ['@stack/**/styles'] }
+            },
+            environment: 'bun',
+            groups: [
+              'style',
+              'repo-type',
+              'type',
+              'repo',
+              'internal-type',
+              ['parent-type', 'sibling-type', 'index-type'],
+
+              ['builtin', 'external'],
+              'internal',
+              ['parent', 'sibling', 'index'],
+              'object',
+              'unknown'
+            ],
+            ignoreCase: true,
+            internalPattern: ['$*/**'],
+            maxLineLength: undefined,
+            newlinesBetween: 'always',
+            order: 'asc',
+            type: 'alphabetical'
+          }
+        ],
+        'perfectionist/sort-object-types': [
+          'error',
+          {
+            customGroups: { callbacks: 'on*' },
+            groupKind: 'required-first',
+            groups: ['unknown', 'callbacks', 'multiline'],
+            ignoreCase: true,
+            order: 'asc',
+            partitionByNewLine: true,
+            type: 'alphabetical'
+          }
+        ]
+      }
+    }
   );
+

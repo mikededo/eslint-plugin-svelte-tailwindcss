@@ -1,4 +1,5 @@
 import type { RuleListener } from '@typescript-eslint/utils/eslint-utils';
+
 import type { SVTPluginConfiguration, SVTRuleContext, SVTRuleMeta, SVTRuleModule } from './types';
 
 const createRule = <

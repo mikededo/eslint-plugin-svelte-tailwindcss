@@ -13,11 +13,11 @@ const resolveDefaultConfigPathAlias = getDefaultConfigPathAlias();
 
 const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
-  ignoredKeys: ['compoundVariants', 'defaultVariants'],
   classRegex: '^class(Name)?$',
   config: resolveDefaultConfigPathAlias?.() ?? 'tailwind.config.js',
   cssFiles: ['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build'],
   cssFilesRefreshRate: 5_000,
+  ignoredKeys: ['compoundVariants', 'defaultVariants'],
   removeDuplicates: true,
   skipClassAttribute: false,
   tags: [],

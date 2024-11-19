@@ -28,13 +28,13 @@ const requireUncached = (module: string) => {
     : twLoadConfig.loadConfig(module); // Using Tailwind CSS's loadConfig utility
 };
 
-let lastModifiedDate: string | null = null;
+let lastModifiedDate: null | string = null;
 /**
  * Load the config from a path string or parsed from an object
  * @returns The config, `null` if the config file was not found, or an object
  * if the config was invalid
  */
-const loadConfig = (config: string | Config): Config | null | object => {
+const loadConfig = (config: Config | string): Config | null | object => {
   if (typeof config === 'object' && config !== null) {
     return config;
   }
@@ -67,7 +67,7 @@ const loadConfig = (config: string | Config): Config | null | object => {
   }
 };
 
-const convertConfigToString = (config: string | Config | any) => {
+const convertConfigToString = (config: any | Config | string) => {
   if (typeof config === 'string') {
     return config;
   }
@@ -82,7 +82,7 @@ const convertConfigToString = (config: string | Config | any) => {
 };
 
 const CHECK_REFRESH_RATE = 1_000;
-let lastCheck: number | null = null;
+let lastCheck: null | number = null;
 let previousConfig: Config | null = null;
 export const resolveConfig = (configPath: string) => {
   const newConfig = convertConfigToString(configPath) !== convertConfigToString(previousConfig);
