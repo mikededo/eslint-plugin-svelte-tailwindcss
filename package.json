@@ -40,9 +40,10 @@
   ],
   "scripts": {
     "build": "unbuild",
+    "gen:rule": "bun run scripts/rule.ts",
+    "gen:update": "bun run scripts/update.ts",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
-    "update": "bun run scripts/gen.ts",
     "test": "vitest run --reporter=dot .",
     "typecheck": "tsc --noEmit"
   },
@@ -60,6 +61,7 @@
     "@types/eslint": "9.6.1",
     "@types/node": "22.9.0",
     "@typescript-eslint/parser": "8.14.0",
+    "commander": "12.1.0",
     "eslint": "9.14.0",
     "eslint-plugin-format": "0.1.2",
     "svelte": "5.1.15",
