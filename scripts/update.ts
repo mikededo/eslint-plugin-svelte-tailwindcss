@@ -26,8 +26,9 @@ const generateRulesIndex = async () => {
       }
     }
 
-    const imports = subDirs.map((dir) => `import ${camelCase(dir)} from './${dir}/rule';`).join('\n');
-    const exports = `export default {\n${subDirs.map(
+    const sorted = subDirs.sort();
+    const imports = sorted.map((dir) => `import ${camelCase(dir)} from './${dir}/rule';`).join('\n');
+    const exports = `export default {\n${sorted.map(
       (dir, i, { length }) => `  '${dir}': ${camelCase(dir)}${i === length - 1 ? '' : ','}`
     ).join('\n')}\n};\n`;
 
