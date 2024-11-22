@@ -44,7 +44,8 @@
     "gen:update": "bun run scripts/update.ts",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
-    "test": "vitest run --reporter=dot .",
+    "test": "vitest . --watch=false",
+    "test:cov": "vitest --coverage --watch=false",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
