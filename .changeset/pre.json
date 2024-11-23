@@ -4,5 +4,7 @@
   "initialVersions": {
     "eslint-plugin-svelte-tailwindcss": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "sour-kings-matter"
+  ]
 }
