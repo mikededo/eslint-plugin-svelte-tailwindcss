@@ -45,7 +45,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
     "test": "vitest . --watch=false",
-    "test:cov": "vitest --coverage --watch=false",
+    "test:cov": "vitest . --coverage --watch=false",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
