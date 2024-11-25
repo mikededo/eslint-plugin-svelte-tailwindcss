@@ -5,8 +5,10 @@
     "eslint-plugin-svelte-tailwindcss": "0.0.1"
   },
   "changesets": [
+    "beige-toys-drive",
     "fresh-owls-live",
     "late-mails-walk",
+    "old-crabs-leave",
     "selfish-otters-jump",
     "sour-kings-matter"
   ]
