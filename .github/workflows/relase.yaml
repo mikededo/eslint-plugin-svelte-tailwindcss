@@ -26,13 +26,19 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Build
         run: bun run build
+      - name: Capture New Release Version
+        run: |
+          bun changeset status --output=release.json
+          echo "NEW_VERSION=$(jq -r '.releases[0].newVersion' release.json)" >> "$GITHUB_ENV"
+          rm release.json
       - name: Create PR release or publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           version: bun changeset version
           publish: bun changeset publish
-          title: "chore(release): version packages"
+          commit: "chore(release): v${{env.NEW_VERSION}}"
+          title: "chore(release): v${{env.NEW_VERSION}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
