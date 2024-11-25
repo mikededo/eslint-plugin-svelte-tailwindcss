@@ -1,6 +1,6 @@
 import type { ESLint, Linter } from 'eslint';
 
-import { version } from '../package.json';
+import { name as packageName, version } from '../package.json';
 import flatConfig from './configs/flat';
 import legacyConfig from './configs/legacy';
 import rules from './rules';
@@ -11,7 +11,7 @@ const plugin: ESLint.Plugin = {
     'flat/base': flatConfig
   },
   meta: {
-    name: 'eslint-plugin-svelte-tailwindcss',
+    name: packageName,
     version
   },
   rules
