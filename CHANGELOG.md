@@ -1,5 +1,11 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- Add tailwindcss as external when bundling ([`86cf91e`](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/commit/86cf91eeea7cd6a1402e42bdd701b1897ae80aeb))
+
 ## 0.1.0-next.0
 
 ### Minor Changes
