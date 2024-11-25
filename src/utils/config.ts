@@ -3,7 +3,7 @@ import type { Config } from 'tailwindcss';
 
 import fs from 'node:fs';
 import path from 'node:path';
-import twResolveConfig from 'tailwindcss/resolveConfig';
+import twResolveConfig from 'tailwindcss/resolveConfig.js';
 
 const getLoadConfig = () => {
   try {

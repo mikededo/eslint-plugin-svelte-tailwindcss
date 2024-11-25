@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-svelte-tailwindcss",
-  "type": "module",
+  "type": "commonjs",
   "version": "0.1.0-next.1",
   "packageManager": "bun@1.1.33",
   "description": "ESLint plugin for Svelte and Tailwind CSS",

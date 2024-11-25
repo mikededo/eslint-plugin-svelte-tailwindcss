@@ -5,7 +5,7 @@ import type { LegacyTailwindContext, SVTPluginOptions } from '../../utils';
 
 import { createNamedRule, getOption, resolveConfig, sortClasses } from '../../utils';
 // @ts-expect-error Specific tailwindcss API
-import { createContext } from 'tailwindcss/lib/lib/setupContextUtils';
+import { createContext } from 'tailwindcss/lib/lib/setupContextUtils.js';
 
 export type Options = Pick<
   SVTPluginOptions,
