@@ -4,5 +4,9 @@
   "initialVersions": {
     "eslint-plugin-svelte-tailwindcss": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "fresh-owls-live",
+    "late-mails-walk",
+    "sour-kings-matter"
+  ]
 }
