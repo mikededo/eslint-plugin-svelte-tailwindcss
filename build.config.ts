@@ -9,6 +9,7 @@ export default defineBuildConfig({
     '@typescript-eslint/utils',
     'eslint',
     'svelte-eslint-parser',
+    'tailwindcss',
     'typescript'
   ],
   rollup: { emitCJS: true }
