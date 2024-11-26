@@ -1,9 +1,9 @@
 import type * as ESTree from 'estree';
 import type { AST } from 'svelte-eslint-parser';
 
-import type { LegacyTailwindContext, SVTPluginOptions } from '../../utils';
+import type { LegacyTailwindContext, ResolvedConfig, SVTPluginOptions } from '../../utils';
 
-import { createNamedRule, getOption, resolveConfig, sortClasses } from '../../utils';
+import { createNamedRule, getMonorepoConfig, getOption, resolveConfig, sortClasses } from '../../utils';
 // @ts-expect-error Specific tailwindcss API
 import setupContextUtils from 'tailwindcss/lib/lib/setupContextUtils.js';
 
@@ -57,14 +57,15 @@ const removeDuplicatesOrOriginal = (
   return result;
 };
 
-type ResolvedConfig = NonNullable<ReturnType<typeof resolveConfig>>;
 export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
 
 export default createNamedRule<OptionList, MessageIds>({
   create(context) {
     const callees = getOption(context, 'callees');
-    const twConfig = getOption(context, 'config');
+    const monorepo = getOption(context, 'monorepo');
+    const twConfig = monorepo ? getMonorepoConfig(context) : getOption(context, 'config');
     const removeDuplicates = getOption(context, 'removeDuplicates');
+
     const mergedConfig = resolveConfig(twConfig);
     if (mergedConfig === null) {
       throw new Error('Could not resolve TailwindCSS config');

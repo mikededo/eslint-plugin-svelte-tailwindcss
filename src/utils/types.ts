@@ -229,6 +229,18 @@ export type SVTPluginConfiguration = {
   cssFiles?: string[];
   cssFilesRefreshRate?: number;
   ignoredKeys?: string[];
+  /**
+   * If set to true, in order to find the tailwind config file, the plugin will
+   * traverse up the directory tree until it finds a valid tailwind config
+   * file. This will ignore the `config` option, for simplicity.
+   * The check will be done always upwards, at folder level, without digging
+   * into each nested folder.
+   *
+   * Important to note that the traverse will go as high to as
+   * [`RuleContext#cwd`](https://github.com/typescript-eslint/typescript-eslint/blob/c1b1106da2807646c6579ddad2c8452db78eb9c6/packages/utils/src/ts-eslint/Rule.ts#L262-L266)
+   *
+   */
+  monorepo?: boolean;
   removeDuplicates?: boolean;
   skipClassAttribute?: boolean;
   /**
@@ -250,7 +262,7 @@ export type SVTRuleContext<
     // Override report to include Svelte parser types
     report: (descriptor: SVTReportDescriptor) => void;
     // Override the custom settings so that they are type safe accross rules
-    settings: { taildwindcss?: SVTPluginConfiguration } & SharedConfigurationSettings;
+    settings: { tailwindcss?: SVTPluginConfiguration } & SharedConfigurationSettings;
     // Override SourceCode to include Svelte parser types
     sourceCode: Readonly<SVTSourceCode>;
   } &

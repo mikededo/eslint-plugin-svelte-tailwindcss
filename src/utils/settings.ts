@@ -1,26 +1,58 @@
 import type { SVTPluginConfiguration, SVTRuleContext } from './types';
 
-const getDefaultConfigPathAlias = (): (() => string) | null => {
-  try {
-    // @ts-expect-error Specific tailwindcss API
-    return import('tailwindcss/lib/util/resolveConfigPath.js').resolveDefaultConfigPath;
-  } catch (_) {
-    return null;
-  }
-};
-const resolveDefaultConfigPathAlias = getDefaultConfigPathAlias();
+import { readdirSync } from 'node:fs';
+import path from 'node:path';
+// @ts-expect-error Specific tailwindcss API
+import resolveConfigPathModule from 'tailwindcss/lib/util/resolveConfigPath.js';
+
+const { resolveDefaultConfigPath: resolveDefaultConfigPathAlias } = resolveConfigPathModule;
+
+// Extracted from
+const VALID_CONFIG_FILES = [
+  './tailwind.config.js',
+  './tailwind.config.cjs',
+  './tailwind.config.mjs',
+  './tailwind.config.ts',
+  './tailwind.config.cts',
+  './tailwind.config.mts'
+];
 
 const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
   classRegex: '^class(Name)?$',
-  config: resolveDefaultConfigPathAlias?.() ?? 'tailwind.config.js',
+  config: resolveDefaultConfigPathAlias?.() ?? 'tailwind.config.ts',
   cssFiles: ['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build'],
   cssFilesRefreshRate: 5_000,
   ignoredKeys: ['compoundVariants', 'defaultVariants'],
+  monorepo: false,
   removeDuplicates: true,
   skipClassAttribute: false,
   tags: [],
   whitelist: []
+};
+
+const getParent = (pathname: string) => pathname.split(path.sep).slice(0, -1).join(path.sep);
+
+const findParentConfigFile = (cwd: string, folder: string, config: string) => {
+  if (!folder.startsWith(cwd)) {
+    throw new Error(
+      'Unable to find config file. `monorepo` setting was set to true, yet not tailwind configuration was found. Make sure you have a tailwind config file.'
+    );
+  }
+
+  for (const current of readdirSync(folder)) {
+    if (config === current) {
+      return path.join(folder, config);
+    }
+
+    for (const valid of VALID_CONFIG_FILES) {
+      if (valid === current) {
+        return path.join(folder, valid);
+      }
+    }
+  }
+
+  return findParentConfigFile(cwd, path.dirname(folder), config);
 };
 
 export const getOption = <
@@ -37,8 +69,8 @@ export const getOption = <
     }
   }
 
-  if (context.settings.taildwindcss) {
-    const settingValue = context.settings.taildwindcss[name];
+  if (context.settings.tailwindcss) {
+    const settingValue = context.settings.tailwindcss[name];
     if (settingValue !== undefined) {
       return settingValue;
     }
@@ -46,3 +78,16 @@ export const getOption = <
 
   return DEFAULT_CONFIG[name];
 };
+
+export const getMonorepoConfig = <
+  TOptions extends readonly Partial<SVTPluginConfiguration>[],
+  TMessageIds extends string
+>(
+  context: SVTRuleContext<TOptions, TMessageIds>
+): string => {
+  const config = getOption(context, 'config');
+  const fileFolder = getParent(context.filename);
+
+  return findParentConfigFile(context.cwd, fileFolder, config);
+};
+
