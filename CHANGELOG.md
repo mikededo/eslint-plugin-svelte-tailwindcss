@@ -1,5 +1,11 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.4
+
+### Minor Changes
+
+- Adds support for `monrepo` setups (i.e. for multiple `tailwind.config.*` files. ([#10](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/10))
+
 ## 0.1.0-next.3
 
 ### Patch Changes
