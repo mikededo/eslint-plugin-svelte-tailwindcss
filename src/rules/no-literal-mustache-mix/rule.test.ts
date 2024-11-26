@@ -5,7 +5,7 @@ import rule from './rule';
 
 const tester = new RuleTester({
   languageOptions: {
-    ecmaVersion: 2021,
+    ecmaVersion: 2020,
     parser: svelteParser,
     sourceType: 'module'
   }

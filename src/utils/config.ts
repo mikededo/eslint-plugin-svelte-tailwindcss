@@ -1,32 +1,16 @@
-/* eslint-disable ts/no-require-imports */
+
 import type { Config } from 'tailwindcss';
 
 import fs from 'node:fs';
 import path from 'node:path';
+import defaultConfig from 'tailwindcss/defaultConfig.js';
 import twResolveConfig from 'tailwindcss/resolveConfig.js';
+// @ts-expect-error Specific Tailwind API
+import loadConfigModule from 'tailwindcss/lib/lib/load-config.js';
 
-const getLoadConfig = () => {
-  try {
-    return require('tailwindcss/lib/lib/load-config');
-  } catch (_) {
-    return null;
-  }
-};
+export type ResolvedConfig = NonNullable<ReturnType<typeof twResolveConfig>>;
 
-const twLoadConfig = getLoadConfig();
-
-/**
- * @see https://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate
- * @param {string} module The path to the module
- * @returns the module's export
- */
-const requireUncached = (module: string) => {
-  delete require.cache[require.resolve(module)];
-
-  return twLoadConfig === null
-    ? require(module) // Using native loading
-    : twLoadConfig.loadConfig(module); // Using Tailwind CSS's loadConfig utility
-};
+const { loadConfig: twLoadConfig } = loadConfigModule;
 
 let lastModifiedDate: null | string = null;
 /**
@@ -48,15 +32,16 @@ const loadConfig = (config: Config | string): Config | null | object => {
 
   try {
     const stats = fs.statSync(resolvedPath);
-    const mtime = `${stats.mtime || ''}`;
-
     if (stats === null) {
       // Default to no config
       return {};
-    } else if (lastModifiedDate !== mtime) {
+    }
+
+    const mtime = `${stats.mtime || ''}`;
+    if (lastModifiedDate !== mtime) {
       // Load the config based on path
       lastModifiedDate = mtime;
-      return requireUncached(resolvedPath);
+      return twLoadConfig(resolvedPath);
     }
 
     // Unchanged config
@@ -84,25 +69,38 @@ const convertConfigToString = (config: any | Config | string) => {
 const CHECK_REFRESH_RATE = 1_000;
 let lastCheck: null | number = null;
 let previousConfig: Config | null = null;
-export const resolveConfig = (configPath: string) => {
-  const newConfig = convertConfigToString(configPath) !== convertConfigToString(previousConfig);
+let previousConfigPath: null | string = null;
+let previouslyResolvedConfig: null | ResolvedConfig = null;
+export const resolveConfig = (configPath: string): ResolvedConfig => {
+  const newConfig = configPath !== previousConfigPath;
   const now = Date.now();
   const expired = lastCheck !== null && now - lastCheck > CHECK_REFRESH_RATE;
 
-  if (!newConfig && !expired) {
-    return previousConfig;
+  if (!newConfig && !expired && previouslyResolvedConfig) {
+    return previouslyResolvedConfig;
   }
 
   lastCheck = now;
+  previousConfigPath = configPath;
 
   const userConfig = loadConfig(configPath);
+  const areConfigsEqual = convertConfigToString(userConfig) === convertConfigToString(previousConfig);
+  if (areConfigsEqual && previouslyResolvedConfig) {
+    return previouslyResolvedConfig;
+  }
 
   // userConfig is null when config file was not modified
   if (userConfig !== null) {
     previousConfig = userConfig as Config;
-    return twResolveConfig(userConfig as Config);
+    const resolvedConfig = twResolveConfig(userConfig as Config);
+    if (resolvedConfig !== null || !Object.keys(resolvedConfig).length) {
+      previouslyResolvedConfig = resolvedConfig;
+      return resolvedConfig;
+    }
   }
 
-  return null;
+  // In case there's no config file, we return the default config provided by
+  // tailwindcss
+  return twResolveConfig(defaultConfig);
 };
 
