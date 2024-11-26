@@ -3,8 +3,7 @@ import type { SVTPluginConfiguration, SVTRuleContext } from './types';
 const getDefaultConfigPathAlias = (): (() => string) | null => {
   try {
     // @ts-expect-error Specific tailwindcss API
-    const { resolveDefaultConfigPath } = import('tailwindcss/lib/util/resolveConfigPath');
-    return resolveDefaultConfigPath;
+    return import('tailwindcss/lib/util/resolveConfigPath.js').resolveDefaultConfigPath;
   } catch (_) {
     return null;
   }

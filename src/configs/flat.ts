@@ -1,22 +1,26 @@
 import type { Linter } from 'eslint';
 
+import svelteParser from 'svelte-eslint-parser';
+
+import plugin from '../index';
+import rules from './rules';
+
 export default [
   {
     name: 'svelte-tailwindcss:base',
     plugins: {
       get 'svelte-tailwindcss'() {
-        // eslint-disable-next-line ts/no-require-imports
-        return require('../index');
+        return plugin;
       }
     }
   },
   {
     files: ['*.svelte', '**/*.svelte'],
     languageOptions: {
-      // eslint-disable-next-line ts/no-require-imports
-      parser: require('svelte-eslint-parser')
+      parser: svelteParser
     },
     name: 'svelte-tailwindcss:base:svelte-setup',
-    processor: 'svelte/svelte'
+    processor: 'svelte/svelte',
+    rules
   }
 ] satisfies Linter.Config[];
