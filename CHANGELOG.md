@@ -1,5 +1,11 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.3
+
+### Patch Changes
+
+- Corrected configs & other issues ([`0a57510`](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/commit/0a57510df5462f1fbad656773f903f505998d6a4))
+
 ## 0.1.0-next.2
 
 ### Patch Changes
