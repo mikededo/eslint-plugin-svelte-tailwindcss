@@ -1,5 +1,4 @@
 import type { Linter } from 'eslint';
-
 import svelteParser from 'svelte-eslint-parser';
 
 import plugin from '../index';

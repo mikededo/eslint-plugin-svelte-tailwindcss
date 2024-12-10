@@ -1,6 +1,6 @@
-import type { RuleListener } from '@typescript-eslint/utils/eslint-utils';
-
 import type { SVTPluginConfiguration, SVTRuleContext, SVTRuleMeta, SVTRuleModule } from './types';
+
+import type { RuleListener } from '@typescript-eslint/utils/eslint-utils';
 
 const createRule = <
   TOptions extends readonly Partial<SVTPluginConfiguration>[],

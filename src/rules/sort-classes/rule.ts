@@ -1,20 +1,20 @@
-import type * as ESTree from 'estree';
-import type { AST } from 'svelte-eslint-parser';
-
 import type { LegacyTailwindContext, ResolvedConfig, SVTPluginOptions } from '../../utils';
 
-import { createNamedRule, getMonorepoConfig, getOption, resolveConfig, sortClasses } from '../../utils';
+import type * as ESTree from 'estree';
+import type { AST } from 'svelte-eslint-parser';
 // @ts-expect-error Specific tailwindcss API
 import setupContextUtils from 'tailwindcss/lib/lib/setupContextUtils.js';
 
+import { createNamedRule, getMonorepoConfig, getOption, resolveConfig, sortClasses } from '../../utils';
+
 const { createContext } = setupContextUtils;
 
+export type MessageIds = 'sort-classes';
+export type OptionList = Options[];
 export type Options = Pick<
   SVTPluginOptions,
   'callees' | 'config' | 'ignoredKeys' | 'removeDuplicates' | 'tags'
 >;
-export type OptionList = Options[];
-export type MessageIds = 'sort-classes';
 
 const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): null | string => {
   if (!literal.value || typeof literal.value !== 'string') {
