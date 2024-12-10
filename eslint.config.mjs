@@ -112,19 +112,11 @@ export default antfu({
         'perfectionist/sort-imports': [
           'error',
           {
-            customGroups: {
-              type: { 'repo-type': ['@stack/**'] },
-              value: { repo: ['@stack/**'], style: ['@stack/**/styles'] }
-            },
             environment: 'bun',
             groups: [
               'style',
-              'repo-type',
-              'type',
-              'repo',
               'internal-type',
               ['parent-type', 'sibling-type', 'index-type'],
-
               ['builtin', 'external'],
               'internal',
               ['parent', 'sibling', 'index'],
@@ -132,7 +124,6 @@ export default antfu({
               'unknown'
             ],
             ignoreCase: true,
-            internalPattern: ['$*/**'],
             maxLineLength: undefined,
             newlinesBetween: 'always',
             order: 'asc',
