@@ -1,5 +1,15 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.5
+
+### Minor Changes
+
+- Add `at-rules-require-postcss` ([#12](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/12))
+
+### Patch Changes
+
+- Update dependencies ([#14](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/14))
+
 ## 0.1.0-next.4
 
 ### Minor Changes
