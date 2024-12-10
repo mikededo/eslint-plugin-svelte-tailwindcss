@@ -2,9 +2,9 @@ import type { AST } from 'svelte-eslint-parser';
 
 import { createNamedRule } from '../../utils';
 
-export type OptionList = [];
 // Fill this type with the message ids
 export type MessageIds = 'no-mix';
+export type OptionList = [];
 
 const CLASS_PREFIX = 'class="';
 

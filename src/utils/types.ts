@@ -6,29 +6,100 @@ import type { SourceCode as ESLintSourceCode, Rule } from 'eslint';
 import type { AST, StyleContext, SvelteConfig } from 'svelte-eslint-parser';
 import type TS from 'typescript';
 
-export type SVTNodeOrToken = {
-  type: string;
-  loc?: AST.SourceLocation | null;
-  range?: [number, number];
+export type LegacyTailwindContext = {
+  layerOrder: { components: bigint };
+  tailwindConfig: {
+    prefix: ((selector: string) => string) | string;
+  };
+  getClassOrder?: (classList: string[]) => [string, bigint | null][];
 };
 
-type SVTReportDescriptorOptionsBase = {
-  data?: { [key: string]: string };
-  fix?: ((fixer: SVTRuleFixer) => IterableIterator<Rule.Fix> | null | Rule.Fix | Rule.Fix[]) | null;
+export type SVTNodeOrToken = {
+  type: string;
+  range?: [number, number];
+  loc?: AST.SourceLocation | null;
 };
-type SVTSuggestionDescriptorMessage = { desc: string } | { messageId: string };
-type SVTSuggestionReportDescriptor = SVTReportDescriptorOptionsBase & SVTSuggestionDescriptorMessage;
-type SVTReportDescriptorOptions = {
-  suggest?: null | SVTSuggestionReportDescriptor[];
-} & SVTReportDescriptorOptionsBase;
-type SVTReportDescriptorMessage = { message: string } | { messageId: string };
-type SVTReportDescriptorLocation =
-  | { loc: { column: number; line: number } | AST.SourceLocation }
-  | { node: SVTNodeOrToken };
+/**
+ * Intended usage:
+ *
+ * ```javascript
+ *  // eslint.config.js
+ *  export default [{
+ *    settings: {
+ *      tailwindcss: {
+ *        // These are the default values but feel free to customize
+ *        callees: ["classnames", "clsx", "ctl"],
+ *        config: "tailwind.config.js",
+ *        cssFiles: [
+ *          "**\/*.css",
+ *          "!**\/node_modules",
+ *          "!**\/.*",
+ *          "!**\/dist",
+ *          "!**\/build",
+ *        ],
+ *        cssFilesRefreshRate: 5_000,
+ *        removeDuplicates: true,
+ *        skipClassAttribute: false,
+ *        whitelist: [],
+ *        tags: [],
+ *        ignoredKeys: ['compoundVariants', 'defaultVariants'],
+ *        classRegex: undefined,
+ *      },
+ *    },
+ * }];
+ * ```
+ */
+export type SVTPluginConfiguration = {
+  callees?: string[];
+  /**
+   * Can be modified to support custom attributes. E.g. "^tw$" for `twin.macro`
+   */
+  classRegex?: string;
+  cssFiles?: string[];
+  cssFilesRefreshRate?: number;
+  skipClassAttribute?: boolean;
+  /**
+   * Can be set to e.g. ['tw'] for use in tw`bg-blue`
+   */
+  tags?: string[];
+  whitelist?: string[];
+  /**
+   * Returned from `loadConfig()` utility if not provided
+   */
+  config?: string;
+  ignoredKeys?: string[];
+  /**
+   * If set to true, in order to find the tailwind config file, the plugin will
+   * traverse up the directory tree until it finds a valid tailwind config
+   * file. This will ignore the `config` option, for simplicity.
+   * The check will be done always upwards, at folder level, without digging
+   * into each nested folder.
+   *
+   * Important to note that the traverse will go as high to as
+   * [`RuleContext#cwd`](https://github.com/typescript-eslint/typescript-eslint/blob/c1b1106da2807646c6579ddad2c8452db78eb9c6/packages/utils/src/ts-eslint/Rule.ts#L262-L266)
+   *
+   */
+  monorepo?: boolean;
+  removeDuplicates?: boolean;
+};
+export type SVTPluginOptions = Partial<SVTPluginConfiguration>;
 export type SVTReportDescriptor = SVTReportDescriptorLocation &
   SVTReportDescriptorMessage &
   SVTReportDescriptorOptions;
-
+export type SVTRuleContext<
+  TOptions extends readonly unknown[],
+  TMessageIds extends string
+> = Readonly<
+  {
+    // Override the custom settings so that they are type safe accross rules
+    settings: { tailwindcss?: SVTPluginConfiguration } & SharedConfigurationSettings;
+    // Override report to include Svelte parser types
+    report: (descriptor: SVTReportDescriptor) => void;
+    // Override SourceCode to include Svelte parser types
+    sourceCode: Readonly<SVTSourceCode>;
+  } &
+  Exclude<TSRuleContext<TMessageIds, TOptions>, 'report' | 'settings' | 'sourceCode'>
+>;
 export type SVTRuleFixer = {
   insertTextAfter: (nodeOrToken: SVTNodeOrToken, text: string) => Rule.Fix;
 
@@ -46,32 +117,55 @@ export type SVTRuleFixer = {
 
   replaceTextRange: (range: AST.Range, text: string) => Rule.Fix;
 };
+export type SVTRuleMeta<
+  TOptions extends readonly Partial<SVTPluginConfiguration>[],
+  TMessageIds extends string,
+  TDocs = unknown
+> = {
+  /**
+   * We override the current `create` method to ensure the `SourceCode`
+   * includes all Svelte AST nodes and methods work with Svelte's AST.
+   */
+  create: (context: SVTRuleContext<TOptions, TMessageIds>, optionsWithDefault: Readonly<TOptions>) => RuleListener;
+  meta: {
+    /**
+     * Ensure the schema is type safe with all the available options.
+     */
+    schema: ({
+      properties?: Record<keyof TOptions[number], JSONSchema4>;
+    } & Omit<JSONSchema4ObjectSchema, 'properties'>)[];
+  } & NamedCreateRuleMeta<TMessageIds, TDocs>;
+} & Omit<RuleWithMetaAndName<TOptions, TMessageIds>, 'create'>;
+
+export type SVTRuleModule<
+  T extends readonly Partial<SVTPluginConfiguration>[]
+> = { defaultOptions: T } & Rule.RuleModule;
 
 export type SVTSourceCode = {
   ast: AST.SvelteProgram;
   hasBOM: boolean;
   lines: string[];
-  scopeManager: ScopeManager;
   text: string;
+  scopeManager: ScopeManager;
   visitorKeys: ESLintSourceCode.VisitorKeys;
   parserServices: {
     [key: string]: unknown;
-    esTreeNodeToTSNodeMap?: ReadonlyMap<unknown, TS.Node>;
-    getStyleContext?: () => StyleContext;
     getSvelteHtmlAst?: () => unknown;
-    hasFullTypeInformation?: boolean; // Old typescript-eslint
     isSvelte?: boolean;
     isSvelteScript?: boolean;
+    esTreeNodeToTSNodeMap?: ReadonlyMap<unknown, TS.Node>;
+    getStyleContext?: () => StyleContext;
+    hasFullTypeInformation?: boolean; // Old typescript-eslint
     program?: TS.Program;
     svelteParseContext?: {
-      /** The version of "svelte/compiler". */
-      compilerVersion?: string;
       /**
        * Whether to use Runes mode.
        * May be `true` if the user is using Svelte v5.
        * Resolved from `svelte.config.js` or `parserOptions`, but may be overridden by `<svelte:options>`.
        */
       runes?: boolean;
+      /** The version of "svelte/compiler". */
+      compilerVersion?: string;
       /** The result of static analysis of `svelte.config.js`. */
       svelteConfig?: null | SvelteConfig;
     };
@@ -186,113 +280,19 @@ export type SVTSourceCode = {
   getCommentsInside: (node: SVTNodeOrToken) => AST.Comment[];
 };
 
-/**
- * Intended usage:
- *
- * ```javascript
- *  // eslint.config.js
- *  export default [{
- *    settings: {
- *      tailwindcss: {
- *        // These are the default values but feel free to customize
- *        callees: ["classnames", "clsx", "ctl"],
- *        config: "tailwind.config.js",
- *        cssFiles: [
- *          "**\/*.css",
- *          "!**\/node_modules",
- *          "!**\/.*",
- *          "!**\/dist",
- *          "!**\/build",
- *        ],
- *        cssFilesRefreshRate: 5_000,
- *        removeDuplicates: true,
- *        skipClassAttribute: false,
- *        whitelist: [],
- *        tags: [],
- *        ignoredKeys: ['compoundVariants', 'defaultVariants'],
- *        classRegex: undefined,
- *      },
- *    },
- * }];
- * ```
- */
-export type SVTPluginConfiguration = {
-  callees?: string[];
-  /**
-   * Can be modified to support custom attributes. E.g. "^tw$" for `twin.macro`
-   */
-  classRegex?: string;
-  /**
-   * Returned from `loadConfig()` utility if not provided
-   */
-  config?: string;
-  cssFiles?: string[];
-  cssFilesRefreshRate?: number;
-  ignoredKeys?: string[];
-  /**
-   * If set to true, in order to find the tailwind config file, the plugin will
-   * traverse up the directory tree until it finds a valid tailwind config
-   * file. This will ignore the `config` option, for simplicity.
-   * The check will be done always upwards, at folder level, without digging
-   * into each nested folder.
-   *
-   * Important to note that the traverse will go as high to as
-   * [`RuleContext#cwd`](https://github.com/typescript-eslint/typescript-eslint/blob/c1b1106da2807646c6579ddad2c8452db78eb9c6/packages/utils/src/ts-eslint/Rule.ts#L262-L266)
-   *
-   */
-  monorepo?: boolean;
-  removeDuplicates?: boolean;
-  skipClassAttribute?: boolean;
-  /**
-   * Can be set to e.g. ['tw'] for use in tw`bg-blue`
-   */
-  tags?: string[];
-  whitelist?: string[];
+type SVTReportDescriptorLocation =
+  | { loc: { line: number; column: number } | AST.SourceLocation }
+  | { node: SVTNodeOrToken };
+type SVTReportDescriptorMessage = { message: string } | { messageId: string };
+
+type SVTReportDescriptorOptions = {
+  suggest?: null | SVTSuggestionReportDescriptor[];
+} & SVTReportDescriptorOptionsBase;
+type SVTReportDescriptorOptionsBase = {
+  data?: { [key: string]: string };
+  fix?: ((fixer: SVTRuleFixer) => IterableIterator<Rule.Fix> | null | Rule.Fix | Rule.Fix[]) | null;
 };
-export type SVTPluginOptions = Partial<SVTPluginConfiguration>;
 
-export type SVTRuleModule<
-  T extends readonly Partial<SVTPluginConfiguration>[]
-> = { defaultOptions: T } & Rule.RuleModule;
-export type SVTRuleContext<
-  TOptions extends readonly unknown[],
-  TMessageIds extends string
-> = Readonly<
-  {
-    // Override report to include Svelte parser types
-    report: (descriptor: SVTReportDescriptor) => void;
-    // Override the custom settings so that they are type safe accross rules
-    settings: { tailwindcss?: SVTPluginConfiguration } & SharedConfigurationSettings;
-    // Override SourceCode to include Svelte parser types
-    sourceCode: Readonly<SVTSourceCode>;
-  } &
-  Exclude<TSRuleContext<TMessageIds, TOptions>, 'report' | 'settings' | 'sourceCode'>
->;
+type SVTSuggestionDescriptorMessage = { desc: string } | { messageId: string };
 
-export type SVTRuleMeta<
-  TOptions extends readonly Partial<SVTPluginConfiguration>[],
-  TMessageIds extends string,
-  TDocs = unknown
-> = {
-  /**
-   * We override the current `create` method to ensure the `SourceCode`
-   * includes all Svelte AST nodes and methods work with Svelte's AST.
-   */
-  create: (context: SVTRuleContext<TOptions, TMessageIds>, optionsWithDefault: Readonly<TOptions>) => RuleListener;
-  meta: {
-    /**
-     * Ensure the schema is type safe with all the available options.
-     */
-    schema: ({
-      properties?: Record<keyof TOptions[number], JSONSchema4>;
-    } & Omit<JSONSchema4ObjectSchema, 'properties'>)[];
-  } & NamedCreateRuleMeta<TMessageIds, TDocs>;
-} & Omit<RuleWithMetaAndName<TOptions, TMessageIds>, 'create'>;
-
-export type LegacyTailwindContext = {
-  layerOrder: { components: bigint };
-  tailwindConfig: {
-    prefix: ((selector: string) => string) | string;
-  };
-  getClassOrder?: (classList: string[]) => [string, bigint | null][];
-};
+type SVTSuggestionReportDescriptor = SVTReportDescriptorOptionsBase & SVTSuggestionDescriptorMessage;

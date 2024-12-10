@@ -1,12 +1,11 @@
 
-import type { Config } from 'tailwindcss';
-
 import fs from 'node:fs';
 import path from 'node:path';
+import type { Config } from 'tailwindcss';
 import defaultConfig from 'tailwindcss/defaultConfig.js';
-import twResolveConfig from 'tailwindcss/resolveConfig.js';
 // @ts-expect-error Specific Tailwind API
 import loadConfigModule from 'tailwindcss/lib/lib/load-config.js';
+import twResolveConfig from 'tailwindcss/resolveConfig.js';
 
 export type ResolvedConfig = NonNullable<ReturnType<typeof twResolveConfig>>;
 

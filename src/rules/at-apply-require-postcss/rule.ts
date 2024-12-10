@@ -2,9 +2,9 @@ import type { AST } from 'svelte-eslint-parser';
 
 import { createNamedRule } from '../../utils';
 
-export type OptionList = [];
 // Fill this type with the message ids
 export type MessageIds = 'require-postcss';
+export type OptionList = [];
 
 export default createNamedRule<OptionList, MessageIds>({
   create(rootContext) {
