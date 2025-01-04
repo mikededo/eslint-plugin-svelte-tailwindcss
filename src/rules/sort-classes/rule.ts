@@ -1,11 +1,24 @@
 import type { LegacyTailwindContext, ResolvedConfig, SVTPluginOptions } from '../../utils';
 
+import type { TSESTree } from '@typescript-eslint/types';
 import type * as ESTree from 'estree';
 import type { AST } from 'svelte-eslint-parser';
 // @ts-expect-error Specific tailwindcss API
 import setupContextUtils from 'tailwindcss/lib/lib/setupContextUtils.js';
 
-import { createNamedRule, getMonorepoConfig, getOption, resolveConfig, sortClasses } from '../../utils';
+import {
+  createNamedRule,
+  extractClassnamesFromValue,
+  getCallExpressionCalleeName,
+  getMonorepoConfig,
+  getOption,
+  getTemplateElementBody,
+  getTemplateElementPrefix,
+  getTemplateElementSuffix,
+  resolveConfig,
+  SEP_REGEX,
+  sortClasses
+} from '../../utils';
 
 const { createContext } = setupContextUtils;
 
@@ -29,33 +42,79 @@ const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): n
  */
 const removeDuplicatesOrOriginal = (
   original: string,
-  removeDuplicates: boolean = false,
-  trim: boolean = true
+  removeDuplicates = false,
+  trim = true
 ): string => {
   if (!removeDuplicates) {
     return original;
   }
 
-  const splitted = original.split(' ');
+  const splitted = original.split(SEP_REGEX);
   let result = '';
   let last = '';
+
   for (let i = 0; i < splitted.length; i++) {
     const value = splitted[i];
-    if (!value) {
+    if (!(value.trim()) || value === last) {
       continue;
     }
-    if (value === last) {
-      continue;
-    }
+
     last = value;
     result += `${value} `;
   }
 
-  if (result[result.length - 1] === ' ' && trim) {
-    return result.slice(0, -1);
-  }
-  return result;
+  return result[result.length - 1] === ' ' && trim
+    ? result.slice(0, -1)
+    : result;
 };
+
+type RemoveWithSpaces = {
+  whitespaces: string[];
+  original: string[];
+  headSpace?: boolean;
+  tailSpace?: boolean;
+  removeDuplicates?: boolean;
+};
+function removeDuplicatesOrOriginalWithSpaces({
+  headSpace,
+  original,
+  removeDuplicates = false,
+  tailSpace,
+  whitespaces
+}: RemoveWithSpaces) {
+  if (!removeDuplicates) {
+    return { classes: original, spaces: whitespaces };
+  }
+
+  const offset = (!headSpace && !tailSpace) || tailSpace ? -1 : 0;
+
+  let previous = original[0];
+
+  const classes = [previous];
+  const whitespacesToRemoveIndices: number[] = [];
+
+  for (let i = 1; i < original.length; i++) {
+    const cls = original[i];
+    if (cls === previous) {
+      // Record the index in whitespaces that needs to be removed
+      const wsIndex = i + offset - whitespacesToRemoveIndices.filter((index) => index < i + offset).length;
+      whitespacesToRemoveIndices.push(wsIndex);
+    } else {
+      classes.push(cls);
+      previous = cls;
+    }
+  }
+
+  const spaces = [...whitespaces];
+  whitespacesToRemoveIndices.sort((a, b) => b - a);
+  for (const index of whitespacesToRemoveIndices) {
+    if (index >= 0 && index < spaces.length) {
+      spaces.splice(index, 1);
+    }
+  }
+
+  return { classes, spaces };
+}
 
 export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
 
@@ -77,7 +136,146 @@ export default createNamedRule<OptionList, MessageIds>({
         : ContextCache.set(mergedConfig, createContext(mergedConfig))
     ).get(mergedConfig);
 
+    const sortNodeArgumentValue = (
+      node: AST.SvelteAttribute | TSESTree.Node,
+      arg: AST.SvelteLiteral | TSESTree.Node
+    ) => {
+      let originalClassNamesValue = null;
+      let start = null;
+      let end = null;
+      let prefix = '';
+      let suffix = '';
+
+      switch (arg.type) {
+        case 'ArrayExpression':
+          arg.elements.forEach((arg) => {
+            if (arg) {
+              sortNodeArgumentValue(node, arg);
+            }
+          });
+
+          return;
+        case 'ConditionalExpression':
+          sortNodeArgumentValue(node, arg.consequent);
+          sortNodeArgumentValue(node, arg.alternate);
+
+          return;
+        case 'Literal':
+          originalClassNamesValue = arg.value;
+          start = arg.range[0] + 1;
+          end = arg.range[1] - 1;
+
+          break;
+        case 'LogicalExpression':
+          sortNodeArgumentValue(node, arg.right);
+
+          return;
+        case 'ObjectExpression': {
+          arg.properties.forEach((prop) => {
+            // If has a key, it's not a spread entry
+            if ('key' in prop) {
+              sortNodeArgumentValue(node, prop.key);
+              sortNodeArgumentValue(node, prop.value);
+            }
+          });
+
+          return;
+        }
+        case 'Property':
+          sortNodeArgumentValue(node, arg.key);
+
+          break;
+        case 'SvelteLiteral':
+          originalClassNamesValue = arg.value;
+          start = arg.range[0];
+          end = arg.range[1];
+
+          break;
+        case 'TemplateElement': {
+          originalClassNamesValue = arg.value.raw;
+          if (originalClassNamesValue === '') {
+            return;
+          }
+
+          start = arg.range[0];
+          end = arg.range[1];
+
+          // https://github.com/eslint/eslint/issues/13360
+          // The problem is that range computation includes the backticks (`test`)
+          // but value.raw does not include them, so there is a mismatch.
+          // start/end does not include the backticks, therefore it matches value.raw.
+          const text = context.sourceCode.getText(arg);
+          prefix = getTemplateElementPrefix(text, originalClassNamesValue)!;
+          suffix = getTemplateElementSuffix(text, originalClassNamesValue)!;
+          originalClassNamesValue = getTemplateElementBody(text, prefix, suffix);
+
+          break;
+        }
+        case 'TemplateLiteral':
+          arg.expressions.forEach((arg) => {
+            sortNodeArgumentValue(node, arg);
+          });
+          arg.quasis.forEach((arg) => {
+            sortNodeArgumentValue(node, arg);
+          });
+
+          return;
+        default:
+          return;
+      }
+
+      if (start === null || end === null) {
+        return;
+      }
+
+      const { classNames, headSpace, tailSpace, whitespaces } =
+        extractClassnamesFromValue(originalClassNamesValue);
+
+      if (classNames.length <= 1) {
+        // Don't run sorting for a single or empty className
+        return;
+      }
+
+      const { classes, spaces } = removeDuplicatesOrOriginalWithSpaces({
+        headSpace,
+        original: (sortClasses(classNames, twContext) ?? '').split(' '),
+        removeDuplicates,
+        tailSpace,
+        whitespaces
+      });
+
+      const validatedClasses = classes.reduce((acc, cls, i, arr) => {
+        const space = spaces[i] ?? '';
+
+        if (i === arr.length - 1 && headSpace && tailSpace) {
+          return acc + (headSpace ? `${space}${cls}` : `${cls}${space}`) + (spaces[spaces.length - 1] ?? '');
+        }
+
+        return acc + (headSpace ? `${space}${cls}` : `${cls}${space}`);
+      }, '');
+
+      if (originalClassNamesValue !== validatedClasses) {
+        context.report({
+          fix: (fixer) => fixer.replaceTextRange([start, end], `${prefix}${validatedClasses}${suffix}`),
+          messageId: 'sort-classes',
+          node
+        });
+      }
+    };
+
     return {
+      'SvelteScriptElement CallExpression': (node: TSESTree.CallExpression) => {
+        // TODO: Extract logic to work with ts/js files but without the SvelteScriptElement
+        const calleName = getCallExpressionCalleeName(node);
+        // Check if callee should be evaluated
+        if (callees.findIndex((name) => calleName === name) === -1) {
+          return;
+        }
+
+        node.arguments.forEach((arg) => {
+          sortNodeArgumentValue(node, arg);
+        });
+      },
       'SvelteStartTag > SvelteAttribute': (node: AST.SvelteAttribute) => {
         if (node.key.name !== 'class') {
           return;
@@ -85,21 +283,7 @@ export default createNamedRule<OptionList, MessageIds>({
 
         node.value.forEach((expr, i) => {
           if (expr.type === 'SvelteLiteral') {
-            const sortedValue = removeDuplicatesOrOriginal(
-              sortClasses(expr.value.split(' '), twContext) ?? '',
-              removeDuplicates,
-              i === node.value.length - 1
-            );
-            if (sortedValue === expr.value) {
-              return;
-            }
-
-            context.report({
-              fix: (fixer) => fixer.replaceTextRange(expr.range, sortedValue),
-              messageId: 'sort-classes',
-              node: expr
-            });
-
+            sortNodeArgumentValue(node, expr);
             return;
           }
 

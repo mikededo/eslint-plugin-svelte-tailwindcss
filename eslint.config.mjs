@@ -76,6 +76,7 @@ export default antfu({
     'antfu/stylistic/rules',
     {
       rules: {
+        'arrow-body-style': ['error', 'as-needed'],
         'style/arrow-parens': ['error', 'always'],
         'style/brace-style': ['error', '1tbs'],
         'style/comma-dangle': ['error', 'never'],
