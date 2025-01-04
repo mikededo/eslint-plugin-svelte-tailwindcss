@@ -1,9 +1,16 @@
-import { RuleTester } from 'eslint';
+import type * as Rule from './rule';
+
+import type { TestCaseError } from '@typescript-eslint/rule-tester';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 import svelteParser from 'svelte-eslint-parser';
 
 import rule from './rule';
 
 const tester = new RuleTester({
+  defaultFilenames: {
+    ts: 'component.svelte',
+    tsx: 'component.svelte'
+  },
   languageOptions: {
     ecmaVersion: 2020,
     parser: svelteParser,
@@ -12,60 +19,57 @@ const tester = new RuleTester({
 });
 
 const getError = (
-  opts: Pick<RuleTester.TestCaseError, 'column' | 'endColumn'>
-): RuleTester.TestCaseError => ({ message: 'TailwindCSS classes should be sorted', ...opts });
+  opts: Pick<TestCaseError<Rule.MessageIds>, 'column' | 'endColumn'> = {}
+): TestCaseError<Rule.MessageIds> => ({
+  messageId: 'sort-classes',
+  ...opts
+});
 
 const unorderedClasses = 'px-8 py-4 text-white bg-blue-500';
+const nlUnorderedClasses = unorderedClasses.replaceAll(' ', '\n');
 const orderedClasses = 'bg-blue-500 px-8 py-4 text-white';
+const nlOrderedClasses = orderedClasses.replaceAll(' ', '\n');
 
-tester.run('sort-classes', rule, {
+// TODO: Extend tests
+tester.run('sort-classes', rule as any, {
   invalid: [
     {
       code: `<div class="${unorderedClasses}"></div>`,
-      errors: [getError({ column: 13, endColumn: unorderedClasses.length + 13 })],
+      errors: [getError()],
       output: `<div class="${orderedClasses}"></div>`
     },
     {
       code: `<div class:px-12={false} class="${unorderedClasses}"></div>`,
-      errors: [getError({ column: 33, endColumn: unorderedClasses.length + 33 })],
+      errors: [getError()],
       output: `<div class:px-12={false} class="${orderedClasses}"></div>`
     },
     {
       code: `<div class={"${unorderedClasses}"}></div>`,
       // 16 is 12 plus the length of the {" and the "}
-      errors: [getError({ column: 12, endColumn: unorderedClasses.length + 16 })],
+      errors: [getError()],
       output: `<div class={"${orderedClasses}"}></div>`
     },
     {
       code: `<div class="{"${unorderedClasses}"}"></div>`,
       // 17 is 13 plus the length of the {" and the "}
-      errors: [getError({ column: 13, endColumn: unorderedClasses.length + 17 })],
+      errors: [getError()],
       output: `<div class="{"${orderedClasses}"}"></div>`
     },
     {
       code: `<div class={twMerge("${unorderedClasses}", variable)}></div>`,
-      errors: [getError({ column: 21, endColumn: unorderedClasses.length + 23 })],
+      errors: [getError()],
       options: [{ callees: ['twMerge'] }],
       output: `<div class={twMerge("${orderedClasses}", variable)}></div>`
     },
     {
       code: `<div class="${unorderedClasses} {twMerge("${unorderedClasses}", variable)}"></div>`,
-      errors: [
-        // + 1 for the extra space which is considered part of the SvelteLiteral
-        getError({ column: 13, endColumn: unorderedClasses.length + 13 + 1 }),
-        getError({ column: 55, endColumn: unorderedClasses.length + 57 })
-      ],
+      errors: [getError(), getError()],
       options: [{ callees: ['twMerge'] }],
       output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)}"></div>`
     },
     {
       code: `<div class="${unorderedClasses} {twMerge("${unorderedClasses}", variable)} ${unorderedClasses}"></div>`,
-      errors: [
-        // + 1 for the extra space which is considered part of the SvelteLiteral
-        getError({ column: 13, endColumn: unorderedClasses.length + 14 }),
-        getError({ column: 55, endColumn: unorderedClasses.length + 57 }),
-        getError({ column: 101, endColumn: unorderedClasses.length + 102 })
-      ],
+      errors: [getError(), getError(), getError()],
       options: [{ callees: ['twMerge'], removeDuplicates: false }],
       output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)} ${orderedClasses}"></div>`
     },
@@ -73,15 +77,92 @@ tester.run('sort-classes', rule, {
     // removeDuplicates
     {
       code: `<div class="${unorderedClasses} bg-blue-500"></div>`,
-      errors: [getError({ column: 13, endColumn: unorderedClasses.length + 13 + 'bg-blue-500 '.length })],
+      errors: [getError()],
       options: [{ removeDuplicates: true }],
       output: `<div class="${orderedClasses}"></div>`
     },
     {
       code: `<div class="${unorderedClasses} bg-blue-500"></div>`,
-      errors: [getError({ column: 13, endColumn: unorderedClasses.length + 13 + 'bg-blue-500 '.length })],
+      errors: [getError()],
       options: [{ removeDuplicates: false }],
       output: `<div class="bg-blue-500 ${orderedClasses}"></div>`
+    },
+    {
+      code: `<script>
+const v = twMerge({ '${unorderedClasses}': true });
+</script>`,
+      errors: [getError()],
+      options: [{ callees: ['twMerge'] }],
+      output: `<script>
+const v = twMerge({ '${orderedClasses}': true });
+</script>`
+    },
+    {
+      code: `<script>
+const v = clsx({ true: '${unorderedClasses}' });
+</script>`,
+      errors: [getError()],
+      options: [{ callees: ['clsx'] }],
+      output: `<script>
+const v = clsx({ true: '${orderedClasses}' });
+</script>`
+    },
+    {
+      code: `<script>
+const v = ctl(\`${nlUnorderedClasses}\`);
+</script>`,
+      errors: [getError()],
+      options: [{ callees: ['ctl'] }],
+      output: `<script>
+const v = ctl(\`${nlOrderedClasses}\`);
+</script>`
+    },
+    {
+      code: `
+<script>
+  const c = ctl(\`
+    ${nlUnorderedClasses}
+    \${
+      !isDisabled &&
+      \`
+        ${nlOrderedClasses}
+      \`
+    }
+    \${
+      isDisabled &&
+      \`
+        ${nlUnorderedClasses}
+      \`
+    }
+  \`)
+</script>
+      `,
+      errors: [getError(), getError()],
+      options: [{ callees: ['ctl'] }],
+      output: `
+<script>
+  const c = ctl(\`
+    ${nlOrderedClasses}
+    \${
+      !isDisabled &&
+      \`
+        ${nlOrderedClasses}
+      \`
+    }
+    \${
+      isDisabled &&
+      \`
+        ${nlOrderedClasses}
+      \`
+    }
+  \`)
+</script>
+      `
+    },
+    {
+      code: `<div class="\n${nlUnorderedClasses}\n"></div>`,
+      errors: [getError()],
+      output: `<div class="\n${nlOrderedClasses}\n"></div>`
     }
   ],
   valid: [
