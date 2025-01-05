@@ -1,9 +1,11 @@
+import type { ExpectedFileType } from '../../utils';
 import type * as Rule from './rule';
 
-import type { TestCaseError } from '@typescript-eslint/rule-tester';
+import type { InvalidTestCase, TestCaseError } from '@typescript-eslint/rule-tester';
 import { RuleTester } from '@typescript-eslint/rule-tester';
 import svelteParser from 'svelte-eslint-parser';
 
+import { EXPECTED_FILE_TYPES } from '../../utils';
 import rule from './rule';
 
 const tester = new RuleTester({
@@ -30,7 +32,83 @@ const nlUnorderedClasses = unorderedClasses.replaceAll(' ', '\n');
 const orderedClasses = 'bg-blue-500 px-8 py-4 text-white';
 const nlOrderedClasses = orderedClasses.replaceAll(' ', '\n');
 
-// TODO: Extend tests
+const getCallExpressionTests = (ext: ExpectedFileType): InvalidTestCase<Rule.MessageIds, Rule.OptionList>[] =>
+  [
+    {
+      code: `const classes = twMerge("${unorderedClasses}");`,
+      errors: [getError()],
+      options: [{ callees: ['twMerge'] }],
+      output: `const classes = twMerge("${orderedClasses}");`
+    },
+    {
+      code: `const v = twMerge({ '${unorderedClasses}': true });`,
+      errors: [getError()],
+      options: [{ callees: ['twMerge'] }],
+      output: `const v = twMerge({ '${orderedClasses}': true });`
+    },
+    {
+      code: `const v = clsx({ true: '${unorderedClasses}' });`,
+      errors: [getError()],
+      options: [{ callees: ['clsx'] }],
+      output: `const v = clsx({ true: '${orderedClasses}' });`
+    },
+    {
+      code: `const v = ctl(\`${nlUnorderedClasses}\`);`,
+      errors: [getError()],
+      options: [{ callees: ['ctl'] }],
+      output: `const v = ctl(\`${nlOrderedClasses}\`);`
+    },
+    {
+      code: `ctl(\`\${enabled && "${unorderedClasses}"}\`)`,
+      errors: [getError()],
+      output: `ctl(\`\${enabled && "${orderedClasses}"}\`)`
+    },
+    {
+      code: `
+const c = ctl(\`
+  ${nlUnorderedClasses}
+  \${
+    !isDisabled &&
+    \`
+      ${nlOrderedClasses}
+    \`
+  }
+  \${
+    isDisabled &&
+    \`
+      ${nlUnorderedClasses}
+    \`
+  }
+\`)
+`,
+      errors: [getError(), getError()],
+      options: [{ callees: ['ctl'] }],
+      output: `
+const c = ctl(\`
+  ${nlOrderedClasses}
+  \${
+    !isDisabled &&
+    \`
+      ${nlOrderedClasses}
+    \`
+  }
+  \${
+    isDisabled &&
+    \`
+      ${nlOrderedClasses}
+    \`
+  }
+\`)
+`
+    },
+    {
+      code: `cva({ primary: ["${unorderedClasses}"], })`,
+      errors: [getError()],
+      options: [{ callees: ['cva'] }],
+      output: `cva({ primary: ["${orderedClasses}"], })`
+    }
+  ].map((test) => ({ ...test, filename: `file${ext}` }));
+
 tester.run('sort-classes', rule as any, {
   invalid: [
     {
@@ -45,13 +123,11 @@ tester.run('sort-classes', rule as any, {
     },
     {
       code: `<div class={"${unorderedClasses}"}></div>`,
-      // 16 is 12 plus the length of the {" and the "}
       errors: [getError()],
       output: `<div class={"${orderedClasses}"}></div>`
     },
     {
       code: `<div class="{"${unorderedClasses}"}"></div>`,
-      // 17 is 13 plus the length of the {" and the "}
       errors: [getError()],
       output: `<div class="{"${orderedClasses}"}"></div>`
     },
@@ -73,6 +149,7 @@ tester.run('sort-classes', rule as any, {
       options: [{ callees: ['twMerge'], removeDuplicates: false }],
       output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)} ${orderedClasses}"></div>`
     },
+
     // Specific options
     // removeDuplicates
     {
@@ -88,85 +165,36 @@ tester.run('sort-classes', rule as any, {
       output: `<div class="bg-blue-500 ${orderedClasses}"></div>`
     },
     {
-      code: `<script>
-const v = twMerge({ '${unorderedClasses}': true });
-</script>`,
-      errors: [getError()],
-      options: [{ callees: ['twMerge'] }],
-      output: `<script>
-const v = twMerge({ '${orderedClasses}': true });
-</script>`
-    },
-    {
-      code: `<script>
-const v = clsx({ true: '${unorderedClasses}' });
-</script>`,
-      errors: [getError()],
-      options: [{ callees: ['clsx'] }],
-      output: `<script>
-const v = clsx({ true: '${orderedClasses}' });
-</script>`
-    },
-    {
-      code: `<script>
-const v = ctl(\`${nlUnorderedClasses}\`);
-</script>`,
-      errors: [getError()],
-      options: [{ callees: ['ctl'] }],
-      output: `<script>
-const v = ctl(\`${nlOrderedClasses}\`);
-</script>`
-    },
-    {
-      code: `
-<script>
-  const c = ctl(\`
-    ${nlUnorderedClasses}
-    \${
-      !isDisabled &&
-      \`
-        ${nlOrderedClasses}
-      \`
-    }
-    \${
-      isDisabled &&
-      \`
-        ${nlUnorderedClasses}
-      \`
-    }
-  \`)
-</script>
-      `,
-      errors: [getError(), getError()],
-      options: [{ callees: ['ctl'] }],
-      output: `
-<script>
-  const c = ctl(\`
-    ${nlOrderedClasses}
-    \${
-      !isDisabled &&
-      \`
-        ${nlOrderedClasses}
-      \`
-    }
-    \${
-      isDisabled &&
-      \`
-        ${nlOrderedClasses}
-      \`
-    }
-  \`)
-</script>
-      `
-    },
-    {
       code: `<div class="\n${nlUnorderedClasses}\n"></div>`,
       errors: [getError()],
       output: `<div class="\n${nlOrderedClasses}\n"></div>`
-    }
+    },
+
+    // Config
+    {
+      code: `<div class="${unorderedClasses.split(' ').map((c) => `ui-${c}`).join(' ')}"></div>`,
+      errors: [getError()],
+      options: [{ config: { prefix: 'ui-' } }],
+      output: `<div class="${orderedClasses.split(' ').map((c) => `ui-${c}`).join(' ')}"></div>`
+    },
+
+    // CallExpression on Svelte files
+    ...getCallExpressionTests('.svelte').map((test) => ({
+      ...test,
+      code: `<script>\n${test.code}\n</script>`,
+      output: `<script>\n${test.output}\n</script>`
+    })),
+    // CallExpression on non-Svelte files
+    ...EXPECTED_FILE_TYPES
+      .filter((ext) => ext !== '.svelte')
+      .flatMap(getCallExpressionTests)
   ],
   valid: [
     { code: `<div class="foo"></div>` },
-    { code: `<div class={clsx("${unorderedClasses}")}></div>`, options: [{ callees: ['twMerge'] }] }
+    { code: `<div class={clsx("${unorderedClasses}")}></div>`, options: [{ callees: ['twMerge'] }] },
+    {
+      code: `<div class="${unorderedClasses}"></div>`,
+      options: [{ config: { prefix: 'other' } }]
+    }
   ]
 });

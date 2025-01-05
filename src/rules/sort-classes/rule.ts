@@ -10,11 +10,13 @@ import {
   createNamedRule,
   extractClassnamesFromValue,
   getCallExpressionCalleeName,
+  getFileType,
   getMonorepoConfig,
   getOption,
   getTemplateElementBody,
   getTemplateElementPrefix,
   getTemplateElementSuffix,
+  isTsOrJsFile,
   resolveConfig,
   SEP_REGEX,
   sortClasses
@@ -263,19 +265,24 @@ export default createNamedRule<OptionList, MessageIds>({
       }
     };
 
-    return {
-      'SvelteScriptElement CallExpression': (node: TSESTree.CallExpression) => {
-        // TODO: Extract logic to work with ts/js files but without the SvelteScriptElement
-        const calleName = getCallExpressionCalleeName(node);
-        // Check if callee should be evaluated
-        if (callees.findIndex((name) => calleName === name) === -1) {
-          return;
-        }
+    const callExpressionListener = (node: TSESTree.CallExpression) => {
+      const calleName = getCallExpressionCalleeName(node);
+      // Check if callee should be evaluated
+      if (callees.findIndex((name) => calleName === name) === -1) {
+        return;
+      }
 
-        node.arguments.forEach((arg) => {
-          sortNodeArgumentValue(node, arg);
-        });
-      },
+      node.arguments.forEach((arg) => {
+        sortNodeArgumentValue(node, arg);
+      });
+    };
+
+    if (isTsOrJsFile(getFileType(context.filename))) {
+      return { CallExpression: callExpressionListener };
+    }
+
+    return {
+      'SvelteScriptElement CallExpression': callExpressionListener,
       'SvelteStartTag > SvelteAttribute': (node: AST.SvelteAttribute) => {
         if (node.key.name !== 'class') {
           return;
