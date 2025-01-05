@@ -1,6 +1,7 @@
 export * from './ast';
 export * from './config';
 export * from './constants';
+export * from './files';
 export * from './rules';
 export * from './settings';
 export * from './sort-classes';
