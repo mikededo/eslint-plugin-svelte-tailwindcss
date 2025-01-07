@@ -29,6 +29,12 @@ This rule accepts the following options:
 In case you define global options, there's no need to configure theme this rule,
 unless you want to change the provided options.
 
+### TS files
+
+This rule can also be used in TypeScript and JavaScript files, yet the
+`callees` option needs to be specified, so that the plugin knows which functions
+should be evaluated.
+
 ## Examples
 
 <details>
