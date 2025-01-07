@@ -1,5 +1,5 @@
 ---
-"eslint-plugin-svelte-tailwindcss": patch
+"eslint-plugin-svelte-tailwindcss": minor
 ---
 
 Support `CallExpression` for `sort-classes` rule
