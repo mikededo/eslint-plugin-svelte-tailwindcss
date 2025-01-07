@@ -64,6 +64,11 @@ const getCallExpressionTests = (ext: ExpectedFileType): InvalidTestCase<Rule.Mes
       output: `ctl(\`\${enabled && "${orderedClasses}"}\`)`
     },
     {
+      code: `ctl(\`\${enabled ? "${unorderedClasses}" : "${unorderedClasses}"}\`)`,
+      errors: [getError(), getError()],
+      output: `ctl(\`\${enabled ? "${orderedClasses}" : "${orderedClasses}"}\`)`
+    },
+    {
       code: `
 const c = ctl(\`
   ${nlUnorderedClasses}
@@ -149,6 +154,16 @@ tester.run('sort-classes', rule as any, {
       options: [{ callees: ['twMerge'], removeDuplicates: false }],
       output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)} ${orderedClasses}"></div>`
     },
+    {
+      code: `<script>
+const multipleSpaces = twMerge("${unorderedClasses.replaceAll(' ', '   ')} ");
+</script>`,
+      errors: [getError()],
+      options: [{ callees: ['twMerge'] }],
+      output: `<script>
+const multipleSpaces = twMerge("${orderedClasses.replaceAll(' ', '   ')} ");
+</script>`
+    },
 
     // Specific options
     // removeDuplicates
@@ -191,10 +206,21 @@ tester.run('sort-classes', rule as any, {
   ],
   valid: [
     { code: `<div class="foo"></div>` },
+    { code: `<div klass="foo"></div>` },
     { code: `<div class={clsx("${unorderedClasses}")}></div>`, options: [{ callees: ['twMerge'] }] },
     {
       code: `<div class="${unorderedClasses}"></div>`,
       options: [{ config: { prefix: 'other' } }]
+    },
+    {
+      code: `clsx("${unorderedClasses}");`,
+      filename: 'file.ts',
+      options: [{ callees: ['twMerge'] }]
+    },
+    {
+      code: 'twMerge({ "": "" });',
+      filename: 'file.ts',
+      options: [{ callees: ['twMerge'] }]
     }
   ]
 });
