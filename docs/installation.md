@@ -64,3 +64,13 @@ Here's the list of options available for the plugin:
   the given classes.
 - `tags`: An array of strings representing the names of the tags that should be
   checked for class sorting. Similar to `callees`, but using template strings.
+
+### Limitations with `config`
+
+Due to changes in how the settings or rule configurations are parsed (see:
+https://github.com/eslint/eslint/issues/17767), it is not possible to serialize
+functions as part of the configuration. This means that through the `config`
+settings/options it is not possible to parse the `plugins` option from Tailwind
+config.  
+If you want to use the `plugins`, define them in the `tailwind.config.{js,ts}`
+file.
