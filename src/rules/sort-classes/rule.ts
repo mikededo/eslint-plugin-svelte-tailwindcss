@@ -77,13 +77,14 @@ type RemoveWithSpaces = {
   tailSpace?: boolean;
   removeDuplicates?: boolean;
 };
-function removeDuplicatesOrOriginalWithSpaces({
+
+const removeDuplicatesOrOriginalWithSpaces = ({
   headSpace,
   original,
   removeDuplicates = false,
   tailSpace,
   whitespaces
-}: RemoveWithSpaces) {
+}: RemoveWithSpaces) => {
   if (!removeDuplicates) {
     return { classes: original, spaces: whitespaces };
   }
@@ -116,7 +117,7 @@ function removeDuplicatesOrOriginalWithSpaces({
   }
 
   return { classes, spaces };
-}
+};
 
 export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
 
@@ -250,7 +251,7 @@ export default createNamedRule<OptionList, MessageIds>({
         const space = spaces[i] ?? '';
 
         if (i === arr.length - 1 && headSpace && tailSpace) {
-          return acc + (headSpace ? `${space}${cls}` : `${cls}${space}`) + (spaces[spaces.length - 1] ?? '');
+          return `${acc}${space}${cls}${spaces[spaces.length - 1]}`;
         }
 
         return acc + (headSpace ? `${space}${cls}` : `${cls}${space}`);
