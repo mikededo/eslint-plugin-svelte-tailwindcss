@@ -7,6 +7,7 @@ export default defineBuildConfig({
   externals: [
     '@typescript-eslint/scope-manager',
     '@typescript-eslint/utils',
+    '@typescript-eslint/types',
     'eslint',
     'svelte-eslint-parser',
     'tailwindcss',
