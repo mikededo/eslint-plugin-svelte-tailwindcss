@@ -55,10 +55,10 @@ export type SVTPluginConfiguration = {
    * Can be modified to support custom attributes. E.g. "^tw$" for `twin.macro`
    */
   classRegex?: string;
-  cssFiles?: string[];
-  cssFilesRefreshRate?: number;
+  // TODO: Implement
   skipClassAttribute?: boolean;
   /**
+   * TODO: Implement TaggedExpression
    * Can be set to e.g. ['tw'] for use in tw`bg-blue`
    */
   tags?: string[];
@@ -67,6 +67,7 @@ export type SVTPluginConfiguration = {
    * Returned from `loadConfig()` utility if not provided
    */
   config?: string;
+  // TODO: Implement
   ignoredKeys?: string[];
   /**
    * If set to true, in order to find the tailwind config file, the plugin will
@@ -77,9 +78,12 @@ export type SVTPluginConfiguration = {
    *
    * Important to note that the traverse will go as high to as
    * [`RuleContext#cwd`](https://github.com/typescript-eslint/typescript-eslint/blob/c1b1106da2807646c6579ddad2c8452db78eb9c6/packages/utils/src/ts-eslint/Rule.ts#L262-L266)
-   *
    */
   monorepo?: boolean;
+  /**
+   * If set to `true`, the plugin will remove duplicate classes from the final
+   * class attribute.
+   */
   removeDuplicates?: boolean;
 };
 export type SVTPluginOptions = Partial<SVTPluginConfiguration>;

@@ -111,6 +111,12 @@ const c = ctl(\`
       errors: [getError()],
       options: [{ callees: ['cva'] }],
       output: `cva({ primary: ["${orderedClasses}"], })`
+    },
+    {
+      code: `const nested = cva({ primary: { small: ["${unorderedClasses}"], default: ["${orderedClasses}"] } })`,
+      errors: [getError()],
+      options: [{ callees: ['cva'] }],
+      output: `const nested = cva({ primary: { small: ["${orderedClasses}"], default: ["${orderedClasses}"] } })`
     }
   ].map((test) => ({ ...test, filename: `file${ext}` }));
 
