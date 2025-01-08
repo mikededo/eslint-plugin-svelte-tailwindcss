@@ -7,22 +7,20 @@ import resolveConfigPathModule from 'tailwindcss/lib/util/resolveConfigPath.js';
 
 const { resolveDefaultConfigPath: resolveDefaultConfigPathAlias } = resolveConfigPathModule;
 
-// Extracted from
+// TODO: Update when v4. Valid v3 config files
 const VALID_CONFIG_FILES = [
-  './tailwind.config.js',
-  './tailwind.config.cjs',
-  './tailwind.config.mjs',
-  './tailwind.config.ts',
-  './tailwind.config.cts',
-  './tailwind.config.mts'
+  'tailwind.config.js',
+  'tailwind.config.cjs',
+  'tailwind.config.mjs',
+  'tailwind.config.ts',
+  'tailwind.config.cts',
+  'tailwind.config.mts'
 ];
 
 const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
   classRegex: '^class(Name)?$',
   config: resolveDefaultConfigPathAlias?.() ?? 'tailwind.config.ts',
-  cssFiles: ['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build'],
-  cssFilesRefreshRate: 5_000,
   ignoredKeys: ['compoundVariants', 'defaultVariants'],
   monorepo: false,
   removeDuplicates: true,
