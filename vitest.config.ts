@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: ['src/**/index.ts'],
-      include: ['src/rules/**/*.ts'],
+      include: ['src/{rules,utils}/**/*.ts'],
       provider: 'v8'
     },
     globals: true,

@@ -2,9 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types';
 
 import { SEP_REGEX } from './constants';
 
-export const getCallExpressionCalleeName = ({
-  callee: node
-}: TSESTree.CallExpression) => {
+export const getCallExpressionCalleeName = ({ callee: node }: TSESTree.CallExpression) => {
   if (node.type === 'Identifier') {
     return node.name;
   }
