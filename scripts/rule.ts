@@ -55,13 +55,13 @@ const RULE_TEMPLATE = `import type { SVTPluginOptions } from '../../utils';
 import { createNamedRule } from '../../utils';
 
 ${options.length
-    ? `export type Options = Pick<
+  ? `export type Options = Pick<
   SVTPluginOptions,
   ${options.map((opt: string) => `'${opt}'`).join(' | ')}
 >;
 export type OptionList = Options[];
 `
-    : 'export type OptionList = [];'}
+  : 'export type OptionList = [];'}
 // Fill this type with the message ids
 export type MessageIds = ${messages.length ? messages.map((msg: string) => `'${msg}'`).join(' | ') : '\'\''};
 
