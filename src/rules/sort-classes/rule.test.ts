@@ -155,6 +155,12 @@ tester.run('sort-classes', rule as any, {
       output: `<div class="${orderedClasses} {twMerge("${orderedClasses}", variable)}"></div>`
     },
     {
+      code: `<div class="${unorderedClasses} {util.twMerge("${unorderedClasses}", variable)}"></div>`,
+      errors: [getError(), getError()],
+      options: [{ callees: ['util.twMerge'] }],
+      output: `<div class="${orderedClasses} {util.twMerge("${orderedClasses}", variable)}"></div>`
+    },
+    {
       code: `<div class="${unorderedClasses} {twMerge("${unorderedClasses}", variable)} ${unorderedClasses}"></div>`,
       errors: [getError(), getError(), getError()],
       options: [{ callees: ['twMerge'], removeDuplicates: false }],

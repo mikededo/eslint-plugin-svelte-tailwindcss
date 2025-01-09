@@ -1,7 +1,6 @@
 import type { LegacyTailwindContext, ResolvedConfig, SVTPluginOptions } from '../../utils';
 
 import type { TSESTree } from '@typescript-eslint/types';
-import type * as ESTree from 'estree';
 import type { AST } from 'svelte-eslint-parser';
 // @ts-expect-error Specific tailwindcss API
 import setupContextUtils from 'tailwindcss/lib/lib/setupContextUtils.js';
@@ -31,7 +30,7 @@ export type Options = Pick<
   'callees' | 'config' | 'ignoredKeys' | 'removeDuplicates' | 'tags'
 >;
 
-const sortLiteral = (literal: ESTree.Literal, context: LegacyTailwindContext): null | string => {
+const sortLiteral = (literal: TSESTree.Literal, context: LegacyTailwindContext): null | string => {
   if (!literal.value || typeof literal.value !== 'string') {
     return null;
   }
@@ -296,7 +295,6 @@ export default createNamedRule<OptionList, MessageIds>({
           }
 
           if (expr.expression.type === 'Literal') {
-            // Case class={"..."}
             // Sort the literal
             const sorted = removeDuplicatesOrOriginal(
               sortLiteral(expr.expression, twContext) ?? '',
@@ -317,11 +315,14 @@ export default createNamedRule<OptionList, MessageIds>({
               messageId: 'sort-classes',
               node: expr
             });
-          } else if (expr.expression.type === 'CallExpression' && 'name' in expr.expression.callee) {
-            // Case class={callee()}
+          } else if (expr.expression.type === 'CallExpression') {
             // Check if the callee is one of the given calles
-            const included = callees.includes(expr.expression.callee.name);
-            if (!included) {
+            const calleeName = getCallExpressionCalleeName(expr.expression);
+            if (!calleeName) {
+              return;
+            }
+
+            if (!callees.includes(calleeName)) {
               return;
             }
 
