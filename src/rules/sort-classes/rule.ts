@@ -316,41 +316,7 @@ export default createNamedRule<OptionList, MessageIds>({
               node: expr
             });
           } else if (expr.expression.type === 'CallExpression') {
-            // Check if the callee is one of the given calles
-            const calleeName = getCallExpressionCalleeName(expr.expression);
-            if (!calleeName) {
-              return;
-            }
-
-            if (!callees.includes(calleeName)) {
-              return;
-            }
-
-            expr.expression.arguments.forEach((arg) => {
-              if (arg.type !== 'Literal') {
-                return;
-              }
-
-              const sorted = removeDuplicatesOrOriginal(
-                sortLiteral(arg, twContext) ?? '',
-                removeDuplicates,
-                i === node.value.length - 1
-              );
-              if (!sorted || sorted === arg.value) {
-                return;
-              }
-
-              context.report({
-                // While the {} are redundant, it's not the rule's task to
-                // ensure code cleanliness. In order to remove unnecessary
-                // brackets, use svelte/no-useless-mustaches from
-                // svelte-eslint-plugin
-                // https://sveltejs.github.io/eslint-plugin-svelte/rules/no-useless-mustaches/
-                fix: (fixer) => fixer.replaceText(arg, `"${sorted}"`),
-                messageId: 'sort-classes',
-                node: arg
-              });
-            });
+            callExpressionListener(expr.expression);
           }
         });
       }
