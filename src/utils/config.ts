@@ -20,6 +20,7 @@ const loadConfig = (config: Config | string): Config | null | object => {
   if (typeof config === 'object' && config !== null) {
     return config;
   }
+
   if (typeof config !== 'string') {
     return {};
   }
@@ -69,6 +70,7 @@ let lastCheck: null | number = null;
 let previousConfig: Config | null = null;
 let previousConfigPath: null | string = null;
 let previouslyResolvedConfig: null | ResolvedConfig = null;
+
 export const resolveConfig = (configPath: string): ResolvedConfig => {
   const newConfig = configPath !== previousConfigPath;
   const now = Date.now();
@@ -102,3 +104,25 @@ export const resolveConfig = (configPath: string): ResolvedConfig => {
   return twResolveConfig(defaultConfig);
 };
 
+/* v8 ignore start */
+const testOnly = <F extends (...args: any[]) => any>(fn: F): (
+  ...args: Parameters<F>
+) => ReturnType<F> => (...args: Parameters<F>): ReturnType<F> => {
+  if (import.meta.env.TEST !== 'true') {
+    throw new Error('Do not use restoreCachedConfigValues outside test environments');
+  }
+  return fn(...args);
+};
+
+export const resetCachedConfigValues = testOnly(() => {
+  lastModifiedDate = null;
+  lastCheck = null;
+  previousConfig = null;
+  previousConfigPath = null;
+  previouslyResolvedConfig = null;
+});
+
+export const setResolvedConfig = testOnly((config: any) => {
+  previouslyResolvedConfig = config as ResolvedConfig;
+});
+/* v8 ignore end */
