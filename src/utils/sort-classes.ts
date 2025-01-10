@@ -65,16 +65,7 @@ const getClassOrderPolyfill = (classes: string[], env: TransformerEnv) => {
   return classNamesWithOrder;
 };
 
-type SortOptions = {
-  env: TransformerEnv;
-  ignoreFirst?: boolean;
-  ignoreLast?: boolean;
-};
-
-const sort = (
-  className: string,
-  { env, ignoreFirst = false, ignoreLast = false }: SortOptions
-) => {
+const sort = (className: string, env: TransformerEnv) => {
   if (typeof className !== 'string' || className === '') {
     return className;
   }
@@ -91,27 +82,19 @@ const sort = (
     classes.pop();
   }
 
-  const prefix = ignoreFirst
-    ? `${classes.shift() ?? ''}${whitespace.shift() ?? ''}`
-    : '';
-  const suffix = ignoreLast
-    ? `${whitespace.pop() ?? ''}${classes.pop() ?? ''}`
-    : '';
   const classNamesWithOrder = env.context.getClassOrder
     ? env.context.getClassOrder(classes)
     : getClassOrderPolyfill(classes, env);
 
-  ;
-  const result = classNamesWithOrder
+  return classNamesWithOrder
     .sort(bigIntSorter)
     .map(([className]) => className)
     .reduce(
       (acc, className, i) => `${acc}${className}${whitespace[i] ?? ''}`,
       ''
     );
-  return prefix + result + suffix;
 };
 
 export const sortClasses = (unordered: string[], context: LegacyTailwindContext): string =>
-  sort(unordered.join(' '), { env: { context } });
+  sort(unordered.join(' '), { context });
 
