@@ -2,10 +2,6 @@ import type { SVTPluginConfiguration, SVTRuleContext } from './types';
 
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
-// @ts-expect-error Specific tailwindcss API
-import resolveConfigPathModule from 'tailwindcss/lib/util/resolveConfigPath.js';
-
-const { resolveDefaultConfigPath: resolveDefaultConfigPathAlias } = resolveConfigPathModule;
 
 // TODO: Update when v4. Valid v3 config files
 const VALID_CONFIG_FILES = [
@@ -20,7 +16,7 @@ const VALID_CONFIG_FILES = [
 const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
   classRegex: '^class(Name)?$',
-  config: resolveDefaultConfigPathAlias?.() ?? 'tailwind.config.ts',
+  config: 'tailwind.config.ts',
   ignoredKeys: ['compoundVariants', 'defaultVariants'],
   monorepo: false,
   removeDuplicates: true,
