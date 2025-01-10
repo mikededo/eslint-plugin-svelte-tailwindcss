@@ -1,5 +1,22 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.6
+
+### Minor Changes
+
+- Improve `sort-classes` implementation as well as fixing a couple of issues with ([#19](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/19))
+  `CallExpressions` inside the `html` code of the template.
+
+- Support `CallExpression` for `sort-classes` rule ([#15](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/15))
+
+### Patch Changes
+
+- Tests improvements, docs fixes and other small fixes/improvements. ([#19](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/19))
+
+- Remove unnecessary configuration inherited from `eslint-plugin-tailwindcss`. ([#19](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/19))
+
+- Add `@typescript-eslint/types` in `externals` ([#16](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/16))
+
 ## 0.1.0-next.5
 
 ### Minor Changes
