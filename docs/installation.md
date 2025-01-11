@@ -17,16 +17,16 @@ v9) and one for regular configurations (ESLint < v9).
 
 ```javascript
 // eslint.config.js
-import pluginSvelteTailwindcss from 'eslint-plugin-svelte-tailwindcss';
+import svelteTailwindcss from 'eslint-plugin-svelte-tailwindcss';
 
 export default [
-  pluginSvelteTailwindcss['flat/base']
+  ...svelteTailwindcss['flat/base']
 ];
 
 
 // If you want to customise the options
 export default [
-  ...svelteTailwind.configs['flat/base'],
+  ...svelteTailwindcss.configs['flat/base'],
   {
     rules: {
       'svelte-tailwindcss/sort-classes': ['warn']
@@ -38,7 +38,7 @@ export default [
 // You can also provide customise ESLint settings, so the options would be
 // available for all rules
 export default [
-  ...svelteTailwind.configs['flat/base'],
+  ...svelteTailwindcss.configs['flat/base'],
   {
     settings: { monorepo: true }
   }

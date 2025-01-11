@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`no-literal-mustache-mix rule > invalid 1`] = `
+{
+  "errorCount": 1,
+  "fixableErrorCount": 1,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 6,
+      "endColumn": 48,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          11,
+          46,
+        ],
+        "text": "bg-blue-500 py-4 {twMerge('px-8')}",
+      },
+      "line": 1,
+      "message": "Do not mix literal expressions with mustache expressions",
+      "messageId": "no-mix",
+      "nodeType": "SvelteAttribute",
+      "ruleId": "svelte-tailwindcss/no-literal-mustache-mix",
+      "severity": 2,
+    },
+  ],
+  "warningCount": 0,
+}
+`;
