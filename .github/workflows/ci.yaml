@@ -24,5 +24,7 @@ jobs:
         run: bun typecheck
       - name: Test
         run: bun run test:cov
+      - name: Test e2e
+        run: bun run test:e2e
       - name: Test build
         run: bun run build
