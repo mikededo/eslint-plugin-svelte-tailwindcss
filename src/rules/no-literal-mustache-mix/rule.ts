@@ -6,7 +6,7 @@ import { createNamedRule } from '../../utils';
 export type MessageIds = 'no-mix';
 export type OptionList = [];
 
-const CLASS_PREFIX = 'class="';
+const CLASS_PREFIX = 'class=';
 
 export default createNamedRule<OptionList, MessageIds>({
   create(context) {
@@ -22,8 +22,9 @@ export default createNamedRule<OptionList, MessageIds>({
           return;
         }
 
-        // Subtract - 1 since it includes the "
-        const nodeText = src.getText(node).slice(CLASS_PREFIX.length - 1);
+        const nodeText = src.getText(node)
+          .slice(CLASS_PREFIX.length)
+          .slice(1, -1); // Remove ' or "
 
         let mustachesFirst = false;
         const [literals, mustaches] = node.value.reduce<[AST.SvelteLiteral[], AST.SvelteMustacheTag[]]>(
@@ -50,7 +51,7 @@ export default createNamedRule<OptionList, MessageIds>({
             : `${joinedLiterals} ${joinedMustaches}`
         ).trim();
 
-        if (`"${result}"` !== nodeText) {
+        if (result !== nodeText) {
           context.report({
             fix: (fixer) => fixer.replaceTextRange([node.range[0] + CLASS_PREFIX.length, node.range[1] - 1], result),
             messageId: 'no-mix',
