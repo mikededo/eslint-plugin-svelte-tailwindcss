@@ -9,9 +9,9 @@ export default antfu({
   ignores: [
     '.DS_Store',
     '.git',
+    'coverage/',
     'dist/',
-    'node_modules/',
-    'tsconfig.tsbuildinfo'
+    'node_modules/'
   ],
   jsonc: true,
   lessOpinionated: true,
@@ -21,6 +21,7 @@ export default antfu({
     quotes: 'single',
     semi: true
   },
+  svelte: true,
   toml: false,
   typescript: {
     overrides: {
