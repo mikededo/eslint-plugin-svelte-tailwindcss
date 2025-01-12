@@ -53,7 +53,10 @@ export default createNamedRule<OptionList, MessageIds>({
 
         if (result !== nodeText) {
           context.report({
-            fix: (fixer) => fixer.replaceTextRange([node.range[0] + CLASS_PREFIX.length, node.range[1] - 1], result),
+            fix: (fixer) => fixer.replaceTextRange([
+              node.range[0] + CLASS_PREFIX.length + 1,
+              node.range[1] - 1
+            ], result),
             messageId: 'no-mix',
             node
           });

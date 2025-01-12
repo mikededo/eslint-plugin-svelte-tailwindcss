@@ -12,7 +12,7 @@ exports[`no-literal-mustache-mix rule > invalid 1`] = `
       "endLine": 1,
       "fix": {
         "range": [
-          11,
+          12,
           46,
         ],
         "text": "bg-blue-500 py-4 {twMerge('px-8')}",
