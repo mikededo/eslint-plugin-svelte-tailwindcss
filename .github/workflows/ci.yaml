@@ -23,8 +23,8 @@ jobs:
       - name: Typecheck
         run: bun typecheck
       - name: Test
-        run: bun run test:cov
+        run: bun run test:cov --watch=false
       - name: Test e2e
-        run: bun run --cwd e2e test:e2e
+        run: bun run --cwd e2e test:e2e --watch=false
       - name: Test build
         run: bun run build
