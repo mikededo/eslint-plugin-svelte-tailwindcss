@@ -339,17 +339,14 @@ export default createNamedRule<OptionList, MessageIds>({
           type: 'array',
           uniqueItems: true
         },
-        config: {
-          type: ['string', 'object']
-        },
+        config: { type: ['string', 'object'] },
         ignoredKeys: {
           items: { minLength: 0, type: 'string' },
           type: 'array',
           uniqueItems: true
         },
-        removeDuplicates: {
-          type: 'boolean'
-        },
+        monorepo: { type: 'boolean' },
+        removeDuplicates: { type: 'boolean' },
         tags: {
           items: { minLength: 0, type: 'string' },
           type: 'array',
