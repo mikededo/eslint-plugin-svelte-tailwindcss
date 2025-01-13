@@ -27,7 +27,7 @@ export type MessageIds = 'sort-classes';
 export type OptionList = Options[];
 export type Options = Pick<
   SVTPluginOptions,
-  'callees' | 'config' | 'ignoredKeys' | 'removeDuplicates' | 'tags'
+  'callees' | 'config' | 'ignoredKeys' | 'monorepo' | 'removeDuplicates' | 'tags'
 >;
 
 const sortLiteral = (literal: TSESTree.Literal, context: LegacyTailwindContext): null | string => {

@@ -6,10 +6,7 @@ import rules from './rules';
 
 const plugin: ESLint.Plugin = {
   configs: { base: flatConfig },
-  meta: {
-    name: packageName,
-    version
-  },
+  meta: { name: packageName, version },
   rules
 };
 

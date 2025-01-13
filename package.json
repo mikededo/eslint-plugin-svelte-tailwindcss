@@ -46,7 +46,7 @@
     "lint:fix": "eslint . --max-warnings 0 --fix",
     "test": "vitest . --watch=false",
     "test:cov": "vitest . --coverage --watch=false",
-    "test:e2e": "bun run build && vitest -c e2e/vitest.config.ts --watch=false",
+    "test:e2e": "vitest --watch=false",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

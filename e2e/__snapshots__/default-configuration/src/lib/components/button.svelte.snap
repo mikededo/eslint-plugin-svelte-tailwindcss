@@ -1,0 +1,29 @@
+[
+  {
+    "errorCount": 1,
+    "fatalErrorCount": 0,
+    "fixableErrorCount": 1,
+    "fixableWarningCount": 0,
+    "messages": [
+      {
+        "column": 4,
+        "endColumn": 75,
+        "endLine": 18,
+        "fix": {
+          "range": [
+            516,
+            579,
+          ],
+          "text": "cursor-not-allowed bg-gray-300 text-gray-500",
+        },
+        "line": 18,
+        "message": "TailwindCSS classes should be sorted",
+        "messageId": "sort-classes",
+        "nodeType": "SvelteAttribute",
+        "ruleId": "svelte-tailwindcss/sort-classes",
+        "severity": 2,
+      },
+    ],
+    "warningCount": 0,
+  },
+]
