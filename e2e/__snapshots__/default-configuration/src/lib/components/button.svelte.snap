@@ -7,16 +7,16 @@
     "messages": [
       {
         "column": 4,
-        "endColumn": 75,
-        "endLine": 18,
+        "endColumn": 87,
+        "endLine": 19,
         "fix": {
           "range": [
-            516,
-            579,
+            591,
+            666,
           ],
-          "text": "cursor-not-allowed bg-gray-300 text-gray-500",
+          "text": "ui-cursor-not-allowed ui-bg-gray-300 ui-text-gray-500",
         },
-        "line": 18,
+        "line": 19,
         "message": "TailwindCSS classes should be sorted",
         "messageId": "sort-classes",
         "nodeType": "SvelteAttribute",

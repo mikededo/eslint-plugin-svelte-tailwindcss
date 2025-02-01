@@ -37,6 +37,19 @@ const lintFile = async (filePath: string, { rules, settings }: LintFileOptions =
         settings: {
           tailwindcss: settings ?? {}
         }
+      },
+      {
+        // Run also for ts file
+        files: ['**/*.ts', '*.ts'],
+        languageOptions: {
+          parser: tsParser
+        },
+
+        // Customization per test group
+        rules: rules ?? {},
+        settings: {
+          tailwindcss: settings ?? {}
+        }
       }
     ],
     overrideConfigFile: true

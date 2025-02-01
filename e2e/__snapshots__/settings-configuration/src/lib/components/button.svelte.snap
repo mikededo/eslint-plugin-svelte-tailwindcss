@@ -12,9 +12,9 @@
         "fix": {
           "range": [
             259,
-            330,
+            351,
           ],
-          "text": "rounded px-4 py-2 font-semibold shadow-sm transition-all transition-all",
+          "text": "ui-rounded ui-px-4 ui-py-2 ui-font-semibold ui-shadow-sm ui-transition-all ui-transition-all",
         },
         "line": 10,
         "message": "TailwindCSS classes should be sorted",
@@ -29,10 +29,10 @@
         "endLine": 14,
         "fix": {
           "range": [
-            356,
-            419,
+            377,
+            452,
           ],
-          "text": "cursor-not-allowed cursor-not-allowed bg-gray-300 text-gray-500",
+          "text": "ui-cursor-not-allowed ui-cursor-not-allowed ui-bg-gray-300 ui-text-gray-500",
         },
         "line": 10,
         "message": "TailwindCSS classes should be sorted",
@@ -47,10 +47,10 @@
         "endLine": 14,
         "fix": {
           "range": [
-            424,
-            464,
+            457,
+            506,
           ],
-          "text": "bg-blue-500 text-white hover:bg-blue-600",
+          "text": "ui-hover:bg-blue-600 ui-bg-blue-500 ui-text-white",
         },
         "line": 10,
         "message": "TailwindCSS classes should be sorted",
@@ -61,16 +61,16 @@
       },
       {
         "column": 4,
-        "endColumn": 75,
-        "endLine": 18,
+        "endColumn": 87,
+        "endLine": 19,
         "fix": {
           "range": [
-            516,
-            579,
+            591,
+            666,
           ],
-          "text": "cursor-not-allowed cursor-not-allowed bg-gray-300 text-gray-500",
+          "text": "ui-cursor-not-allowed ui-cursor-not-allowed ui-bg-gray-300 ui-text-gray-500",
         },
-        "line": 18,
+        "line": 19,
         "message": "TailwindCSS classes should be sorted",
         "messageId": "sort-classes",
         "nodeType": "SvelteAttribute",
