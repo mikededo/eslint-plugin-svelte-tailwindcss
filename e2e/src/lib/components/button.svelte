@@ -8,17 +8,17 @@
 
   const mergedClasses = $derived(
     twMerge(
-      'transition-all px-4 py-2 font-semibold rounded shadow-sm transition-all',
-      rest.disabled ? 'cursor-not-allowed text-gray-500 cursor-not-allowed bg-gray-300' : 'text-white hover:bg-blue-600 bg-blue-500',
+      'ui-transition-all ui-px-4 ui-py-2 ui-font-semibold ui-rounded ui-shadow-sm ui-transition-all',
+      rest.disabled ? 'ui-cursor-not-allowed ui-text-gray-500 ui-cursor-not-allowed ui-bg-gray-300' : 'ui-text-white ui-hover:bg-blue-600 ui-bg-blue-500',
       rest.class
     )
   );
 </script>
 
-<p class='cursor-not-allowed bg-gray-300 text-gray-500 cursor-not-allowed'>
+<!-- Keep a duplicated class -->
+<p class='ui-cursor-not-allowed ui-bg-gray-300 ui-text-gray-500 ui-cursor-not-allowed'>
   Classes with the class attribute
 </p>
 <button {...rest} class={mergedClasses}>
   {@render rest.children?.()}
 </button>
-
