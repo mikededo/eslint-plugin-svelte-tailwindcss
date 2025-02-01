@@ -20,7 +20,7 @@ v9) and one for regular configurations (ESLint < v9).
 import svelteTailwindcss from 'eslint-plugin-svelte-tailwindcss';
 
 export default [
-  ...svelteTailwindcss['flat/base']
+  ...svelteTailwindcss.configs['flat/base']
 ];
 
 

@@ -5,6 +5,8 @@ This project is similar to [eslint-plugin-tailwindcss](https://github.com/franco
 but since that plugin does not provide direct support for Svelte, this project
 was created to fill the gap.
 
+See the installation and rule documentation in the [`docs/` folder](./docs).
+
 ## Attributions
 
 This plugin is heavily inspired by:
