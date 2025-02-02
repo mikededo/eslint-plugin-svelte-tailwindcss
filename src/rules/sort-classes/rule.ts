@@ -27,7 +27,7 @@ export type MessageIds = 'sort-classes';
 export type OptionList = Options[];
 export type Options = Pick<
   SVTPluginOptions,
-  'callees' | 'config' | 'ignoredKeys' | 'monorepo' | 'removeDuplicates' | 'tags'
+  'callees' | 'config' | 'declarations' | 'ignoredKeys' | 'monorepo' | 'removeDuplicates' | 'tags'
 >;
 
 const sortLiteral = (literal: TSESTree.Literal, context: LegacyTailwindContext): null | string => {
@@ -123,6 +123,7 @@ export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof create
 export default createNamedRule<OptionList, MessageIds>({
   create(context) {
     const callees = getOption(context, 'callees');
+    const declarations = getOption(context, 'declarations');
     const monorepo = getOption(context, 'monorepo');
     const twConfig = monorepo ? getMonorepoConfig(context) : getOption(context, 'config');
     const removeDuplicates = getOption(context, 'removeDuplicates');
@@ -137,6 +138,24 @@ export default createNamedRule<OptionList, MessageIds>({
         ? ContextCache
         : ContextCache.set(mergedConfig, createContext(mergedConfig))
     ).get(mergedConfig);
+
+    type ValidDeclarator = { init: NonNullable<TSESTree.VariableDeclarator['init']> } & TSESTree.VariableDeclarator;
+    const isValidDeclarator = (node: TSESTree.VariableDeclarator): node is ValidDeclarator => {
+      if (node.id?.type !== 'Identifier') {
+        // Any other variable declarations are not supported
+        return false;
+      } else if (!node.init) {
+        return false;
+      }
+      const fnName = node.id?.name;
+      if (!fnName) {
+        return false;
+      }
+      const isPrefix = (declarations.prefix ?? []).some((prefix) => fnName.startsWith(prefix));
+      const isSuffix = (declarations.suffix ?? []).some((suffix) => fnName.endsWith(suffix));
+      const isName = (declarations.names ?? []).includes(fnName);
+      return isPrefix || isSuffix || isName;
+    };
 
     const sortNodeArgumentValue = (
       node: AST.SvelteAttribute | TSESTree.Node,
@@ -157,11 +176,32 @@ export default createNamedRule<OptionList, MessageIds>({
           });
 
           return;
+        case 'BlockStatement':
+          arg.body.forEach((arg) => {
+            sortNodeArgumentValue(node, arg);
+          });
+          break;
+        case 'CallExpression': {
+          const calleName = getCallExpressionCalleeName(arg);
+          // Check if callee should be evaluated
+          if (callees.findIndex((name) => calleName === name) === -1) {
+            return;
+          }
+
+          arg.arguments.forEach((arg) => {
+            sortNodeArgumentValue(node, arg);
+          });
+          break;
+        }
         case 'ConditionalExpression':
           sortNodeArgumentValue(node, arg.consequent);
           sortNodeArgumentValue(node, arg.alternate);
 
           return;
+        case 'FunctionDeclaration':
+        case 'FunctionExpression':
+          sortNodeArgumentValue(node, arg.body);
+          break;
         case 'Literal':
           originalClassNamesValue = arg.value;
           start = arg.range[0] + 1;
@@ -186,6 +226,13 @@ export default createNamedRule<OptionList, MessageIds>({
         case 'Property':
           sortNodeArgumentValue(node, arg.key);
 
+          break;
+        case 'ReturnStatement':
+          if (!arg.argument) {
+            return;
+          }
+
+          sortNodeArgumentValue(node, arg.argument);
           break;
         case 'SvelteLiteral':
           originalClassNamesValue = arg.value;
@@ -222,6 +269,13 @@ export default createNamedRule<OptionList, MessageIds>({
           });
 
           return;
+        case 'VariableDeclarator':
+          if (!isValidDeclarator(arg)) {
+            return;
+          }
+
+          sortNodeArgumentValue(node, arg.init);
+          break;
         default:
           return;
       }
@@ -277,12 +331,27 @@ export default createNamedRule<OptionList, MessageIds>({
       });
     };
 
+    const declaratorListener = (node: TSESTree.VariableDeclarator) => {
+      if (!isValidDeclarator(node)) {
+        return;
+      }
+
+      sortNodeArgumentValue(node, node.init);
+    };
+
+    const commonListeners = {
+      CallExpression: callExpressionListener,
+      VariableDeclarator: declaratorListener
+    };
     if (isTsOrJsFile(getFileType(context.filename))) {
-      return { CallExpression: callExpressionListener };
+      return commonListeners;
     }
 
     return {
-      'SvelteScriptElement CallExpression': callExpressionListener,
+      ...Object.entries(commonListeners).reduce((acc, [key, listener]) => ({
+        ...acc,
+        [`SvelteScriptElement ${key}`]: listener
+      }), {}),
       'SvelteStartTag > SvelteAttribute': (node: AST.SvelteAttribute) => {
         if (node.key.name !== 'class') {
           return;
@@ -340,6 +409,27 @@ export default createNamedRule<OptionList, MessageIds>({
           uniqueItems: true
         },
         config: { type: ['string', 'object'] },
+        declarations: {
+          additionalProperties: false,
+          properties: {
+            names: {
+              items: { type: 'string' },
+              type: 'array',
+              uniqueItems: true
+            },
+            prefix: {
+              items: { type: 'string' },
+              type: 'array',
+              uniqueItems: true
+            },
+            suffix: {
+              items: { type: 'string' },
+              type: 'array',
+              uniqueItems: true
+            }
+          },
+          type: 'object'
+        },
         ignoredKeys: {
           items: { minLength: 0, type: 'string' },
           type: 'array',

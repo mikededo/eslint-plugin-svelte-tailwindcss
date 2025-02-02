@@ -19,6 +19,9 @@ This rule accepts the following options:
 - `config`: A string representing the path of the Tailwind config file. By
   default checks the value from the `loadConfig` function provided from
   `tailwindcss`.
+- `declarations`: An object representing the names of the variables that should
+  be evaluated to sort the classes. It can either be a set of prefixes, suffixes
+  and/or names. 
 - `removeDuplicates`: A boolean representing whether to remove duplicates from
   the given classes.
 - `tags`: An array of strings representing the names of the tags that should be
@@ -34,6 +37,31 @@ unless you want to change the provided options.
 This rule can also be used in TypeScript and JavaScript files, yet the
 `callees` option needs to be specified, so that the plugin knows which functions
 should be evaluated.
+
+### Conflicts
+
+There's a small conflict between callees and variable declarations. This could
+happen if you define the `declarations` and the `callees` option. Imagine the
+following example:
+
+```js
+/**
+ * {
+ *   "callees": ["twMerge"],
+ *   "declarations": { "name": ["variable"] },
+ * }
+ */
+const variable = twMerge(/* ... */);
+```
+
+In this case, the plugin will evaluate twice the variable, as it will check for
+the `VariableDeclarator` that matches the `name` property, and the
+`CallExpression` from the `twMerge` function.  
+While it's planned to improve or even remove this issue, at the moment it's
+recommend to prefer `callees` over `declarations`, and in case there's any
+conflict, to rename the variable or change the prefix/suffix configuration. At
+the same time, it shouldn't be an error that occurs many times.
+
 
 ## Examples
 
@@ -132,3 +160,7 @@ export default [
 ```
 
 </details>
+
+### Even more examples
+
+Check the [e2e tests folder](../e2e/src) to find more examples.

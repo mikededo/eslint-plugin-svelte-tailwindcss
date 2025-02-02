@@ -55,6 +55,13 @@ Here's the list of options available for the plugin:
 - `config`: A string representing the path of the Tailwind config file. By
   default checks the value from the `loadConfig` function provided from
   `tailwindcss`.
+- `declarations`: Possible prefixes, suffixes and names that will be used to
+  check if a variable declaration should be evaluated. For example, if you use an
+  object to store variants, and you want the properties of that object to be
+  evaluated, you should define the object name/prefix/suffix here. This is done so
+  that the plugin can skip most of the declarations with literals that are no
+  relevant. Also works for function and arrow function declarations. By default
+  the object is empty.
 - `monorepo`: A boolean that specifies whether the plugin should automatically
   identify the tailwind config file. This should only be used when you have
   multiple tailwind config files in your project. If by any change you have a

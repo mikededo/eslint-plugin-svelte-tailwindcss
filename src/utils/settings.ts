@@ -17,6 +17,7 @@ const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
   classRegex: '^class(Name)?$',
   config: 'tailwind.config.ts',
+  declarations: {},
   ignoredKeys: ['compoundVariants', 'defaultVariants'],
   monorepo: false,
   removeDuplicates: true,
