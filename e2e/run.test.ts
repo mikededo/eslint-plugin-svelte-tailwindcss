@@ -13,12 +13,17 @@ import svelteTailwind from '../src/index';
 type LintFileOptions = Partial<{
   rules: Partial<PluginRules>;
   settings: SVTPluginOptions;
+  /**
+   * This prop should omly be used by the tests with the settings as the
+   * default configuration DOES NOT parse and validate TS files
+   */
+  tsRules?: Partial<PluginRules>;
 }>;
 type PluginRules = {
   [K in keyof Rules as K extends string ? `svelte-tailwindcss/${K}` : never]: Rules[K]
 };
 
-const lintFile = async (filePath: string, { rules, settings }: LintFileOptions = {}) => {
+const lintFile = async (filePath: string, { rules, settings, tsRules }: LintFileOptions = {}) => {
   const eslint = new ESLint({
     overrideConfig: [
       ...svelteTailwind.configs!.base as Linter.Config[],
@@ -46,7 +51,7 @@ const lintFile = async (filePath: string, { rules, settings }: LintFileOptions =
         },
 
         // Customization per test group
-        rules: rules ?? {},
+        rules: rules ?? tsRules ?? {},
         settings: {
           tailwindcss: settings ?? {}
         }
@@ -100,6 +105,7 @@ describe('e2e', () => {
               'svelte-tailwindcss/at-apply-require-postcss': 'warn',
               'svelte-tailwindcss/sort-classes': ['error', {
                 callees: ['twMerge'],
+                declarations: { suffix: ['_CLASSES'] },
                 monorepo: false,
                 removeDuplicates: true
               }]
@@ -117,7 +123,12 @@ describe('e2e', () => {
           await lintFile(file, {
             settings: {
               callees: ['twMerge'],
+              declarations: { suffix: ['_CLASSES'] },
               removeDuplicates: false
+            },
+            tsRules: {
+              'svelte-tailwindcss/at-apply-require-postcss': 'warn',
+              'svelte-tailwindcss/sort-classes': 'error'
             }
           })
         )

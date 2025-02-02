@@ -147,10 +147,12 @@ export default createNamedRule<OptionList, MessageIds>({
       } else if (!node.init) {
         return false;
       }
+
       const fnName = node.id?.name;
       if (!fnName) {
         return false;
       }
+
       const isPrefix = (declarations.prefix ?? []).some((prefix) => fnName.startsWith(prefix));
       const isSuffix = (declarations.suffix ?? []).some((suffix) => fnName.endsWith(suffix));
       const isName = (declarations.names ?? []).includes(fnName);
