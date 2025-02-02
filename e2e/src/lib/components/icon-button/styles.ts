@@ -27,7 +27,7 @@ const ICON_WRAPPER_SIZES: Record<IconButtonSizes, string> = {
 };
 const ICON_WRAPPER_CLASSES =
   'ui-flex ui-items-center ui-justify-center ui-rounded-full ui-hover:bg-muted ui-transition-colors ui-cursor-pointer';
-const COLORS: Record<IconButtonColor, string> = {
+const COLORS_CLASSES: Record<IconButtonColor, string> = {
   destructive: 'ui-text-destructive-500 hover:ui-bg-destructive-50 ui-stroke-destructive-500',
   muted:
     'ui-bg-transparent ui-text-foreground hover:ui-bg-surface-50 ui-stroke-foreground dark:ui-text-white dark:ui-stroke-white dark:hover:ui-bg-surface-900 disabled:ui-bg-surface-50 disabled:ui-text-surface-200',
@@ -42,7 +42,7 @@ export const getWrapperClasses = ({
   color,
   size
 }: { classes?: string } & Required<Pick<BaseProps, 'color' | 'size'>>) =>
-  twMerge(ICON_WRAPPER_CLASSES, ICON_WRAPPER_SIZES[size], COLORS[color ?? 'primary'], classes);
+  twMerge(ICON_WRAPPER_CLASSES, ICON_WRAPPER_SIZES[size], COLORS_CLASSES[color ?? 'primary'], classes);
 
 export const getIconClasses = ({
   classes,
