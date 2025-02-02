@@ -59,14 +59,14 @@ const getCallExpressionTests = (ext: ExpectedFileType): InvalidTestCase<Rule.Mes
       output: `const v = ctl(\`${nlOrderedClasses}\`);`
     },
     {
-      code: `ctl(\`\${enabled && "${unorderedClasses}"}\`)`,
+      code: `const v = ctl(\`\${enabled && "${unorderedClasses}"}\`)`,
       errors: [getError()],
-      output: `ctl(\`\${enabled && "${orderedClasses}"}\`)`
+      output: `const v = ctl(\`\${enabled && "${orderedClasses}"}\`)`
     },
     {
-      code: `ctl(\`\${enabled ? "${unorderedClasses}" : "${unorderedClasses}"}\`)`,
+      code: `const v = ctl(\`\${enabled ? "${unorderedClasses}" : "${unorderedClasses}"}\`)`,
       errors: [getError(), getError()],
-      output: `ctl(\`\${enabled ? "${orderedClasses}" : "${orderedClasses}"}\`)`
+      output: `const v = ctl(\`\${enabled ? "${orderedClasses}" : "${orderedClasses}"}\`)`
     },
     {
       code: `
@@ -107,16 +107,68 @@ const c = ctl(\`
 `
     },
     {
-      code: `cva({ primary: ["${unorderedClasses}"], })`,
+      code: `const v = cva({ primary: ["${unorderedClasses}"], })`,
       errors: [getError()],
       options: [{ callees: ['cva'] }],
-      output: `cva({ primary: ["${orderedClasses}"], })`
+      output: `const v = cva({ primary: ["${orderedClasses}"], })`
     },
     {
       code: `const nested = cva({ primary: { small: ["${unorderedClasses}"], default: ["${orderedClasses}"] } })`,
       errors: [getError()],
       options: [{ callees: ['cva'] }],
       output: `const nested = cva({ primary: { small: ["${orderedClasses}"], default: ["${orderedClasses}"] } })`
+    }
+  ].map((test) => ({ ...test, filename: `file${ext}` }));
+
+const getDeclarationTests = (ext: ExpectedFileType): InvalidTestCase<Rule.MessageIds, Rule.OptionList>[] =>
+  [
+    {
+      code: `function fn() { const classVariants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { prefix: ['class'] } }],
+      output: `function fn() { const classVariants = '${orderedClasses}'; }`
+    },
+    {
+      code: `const fn = () => { const classVariants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { prefix: ['class'] } }],
+      output: `const fn = () => { const classVariants = '${orderedClasses}'; }`
+    },
+    {
+      code: `function name() { const classVariants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { suffix: ['Variants'] } }],
+      output: `function name() { const classVariants = '${orderedClasses}'; }`
+    },
+    {
+      code: `const name = () => { let classVariants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { suffix: ['Variants'] } }],
+      output: `const name = () => { let classVariants = '${orderedClasses}'; }`
+    },
+    {
+      code: `function name() { let variants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { names: ['variants'] } }],
+      output: `function name() { let variants = '${orderedClasses}'; }`
+    },
+    {
+      code: `const name = () => { const variants = '${unorderedClasses}'; }`,
+      errors: [getError()],
+      options: [{ declarations: { names: ['variants'] } }],
+      output: `const name = () => { const variants = '${orderedClasses}'; }`
+    },
+    {
+      code: `const check = '${unorderedClasses}', nocheck = '${unorderedClasses}';`,
+      errors: [getError()],
+      options: [{ declarations: { prefix: ['check'] } }],
+      output: `const check = '${orderedClasses}', nocheck = '${unorderedClasses}';`
+    },
+    {
+      code: `const variants = { prop: '${unorderedClasses}' };`,
+      errors: [getError()],
+      options: [{ declarations: { names: ['variants'] } }],
+      output: `const variants = { prop: '${orderedClasses}' };`
     }
   ].map((test) => ({ ...test, filename: `file${ext}` }));
 
@@ -214,7 +266,10 @@ const multipleSpaces = twMerge("${orderedClasses.replaceAll(' ', '   ')} ");
     // CallExpression on non-Svelte files
     ...EXPECTED_FILE_TYPES
       .filter((ext) => ext !== '.svelte')
-      .flatMap(getCallExpressionTests)
+      .flatMap(getCallExpressionTests),
+    ...EXPECTED_FILE_TYPES
+      .filter((ext) => ext !== '.svelte')
+      .flatMap(getDeclarationTests)
   ],
   valid: [
     { code: `<div class="foo"></div>` },
@@ -233,6 +288,11 @@ const multipleSpaces = twMerge("${orderedClasses.replaceAll(' ', '   ')} ");
       code: 'twMerge({ "": "" });',
       filename: 'file.ts',
       options: [{ callees: ['twMerge'] }]
-    }
+    },
+    ...[{ names: ['styles'] }, { prefix: ['sty'] }, { suffix: ['les'] }].map((declarations) => ({
+      code: `const variants = '${unorderedClasses}'`,
+      filename: 'file.ts',
+      options: [{ declarations }]
+    }))
   ]
 });

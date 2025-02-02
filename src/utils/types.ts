@@ -50,6 +50,9 @@ export type SVTNodeOrToken = {
  * ```
  */
 export type SVTPluginConfiguration = {
+  /**
+   * Names of the functions that are called such as `clsx` or `twMerge``
+   */
   callees?: string[];
   /**
    * Can be modified to support custom attributes. E.g. "^tw$" for `twin.macro`
@@ -67,6 +70,20 @@ export type SVTPluginConfiguration = {
    * Returned from `loadConfig()` utility if not provided
    */
   config?: string;
+  /**
+   * Possible prefixes, suffixes and names that will be used to check if a
+   * variable declaration should be evaluated. For example, if you use an
+   * object to store variants, and you want the properties of that object to be
+   * evaluated, you should define the object name/prefix/suffix here. This is
+   * done so that the plugin can skip most of the declarations with literals
+   * that are no relevant. Also works for function and arrow function
+   * declarations.
+   */
+  declarations?: {
+    names?: string[];
+    prefix?: string[];
+    suffix?: string[];
+  };
   // TODO: Implement
   ignoredKeys?: string[];
   /**
