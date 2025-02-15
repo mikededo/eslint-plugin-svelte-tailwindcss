@@ -1,5 +1,17 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.7
+
+### Minor Changes
+
+- Remove support for ESLint versions previous to v9. ([#20](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/20))
+
+### Patch Changes
+
+- Update docs ([`518dc9c`](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/commit/518dc9c20abe8004326972eacb61fdaac62376f9))
+
+- Update minor issues with `no-literal-mustache-mix`. ([#20](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/20))
+
 ## 0.1.0-next.6
 
 ### Minor Changes
