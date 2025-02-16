@@ -12,9 +12,6 @@ bun add -d eslint-plugin-svelte-tailwindcss@next svelte-eslint-parser
 
 ## Configuration
 
-The plugin only provides two base configurations, one for flat confi (ESLint >=
-v9) and one for regular configurations (ESLint < v9).
-
 ```javascript
 // eslint.config.js
 import svelteTailwindcss from 'eslint-plugin-svelte-tailwindcss';
@@ -44,6 +41,39 @@ export default [
   }
 ]
 ```
+
+### Linting `js` or `ts` files
+
+While the plugin is designed to work with Svelte files, it can also be used to
+lint JavaScript and TypeScript files. In order to enable the plugin for such
+files, add  the following to the ESLint configuration:
+
+```js
+// eslint.config.js
+import svelteTailwindcss from 'eslint-plugin-svelte-tailwindcss';
+// You will need to install @typescript-eslint/parser
+import tsParser from '@typescript-eslint/parser';
+
+export default [
+  ...svelteTailwindcss.configs['flat/base'],
+  {
+    files: ['**/*.ts', '*.ts'],
+    languageOptions: {
+      parser: tsParser
+    },
+    rules: {
+      'svelte-tailwindcss/at-apply-require-postcss': 'warn',
+      'svelte-tailwindcss/sort-classes': 'error'
+    }
+  }
+];
+```
+
+> Note: If you are using the `eslint-plugin-tailwindcss`, you may encounter
+> conflicts between the two plugins as they will both report issues for the same
+> line.  
+> I'd recommend disabling one of the two plugins or the conflicting rules of the
+> plugins.
 
 ## Options
 
