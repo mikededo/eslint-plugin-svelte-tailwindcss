@@ -148,11 +148,7 @@ export default createNamedRule<OptionList, MessageIds>({
         return false;
       }
 
-      const fnName = node.id?.name;
-      if (!fnName) {
-        return false;
-      }
-
+      const fnName = node.id.name;
       const isPrefix = (declarations.prefix ?? []).some((prefix) => fnName.startsWith(prefix));
       const isSuffix = (declarations.suffix ?? []).some((suffix) => fnName.endsWith(suffix));
       const isName = (declarations.names ?? []).includes(fnName);
@@ -178,32 +174,16 @@ export default createNamedRule<OptionList, MessageIds>({
           });
 
           return;
-        case 'BlockStatement':
-          arg.body.forEach((arg) => {
-            sortNodeArgumentValue(node, arg);
-          });
-          break;
-        case 'CallExpression': {
-          const calleName = getCallExpressionCalleeName(arg);
-          // Check if callee should be evaluated
-          if (callees.findIndex((name) => calleName === name) === -1) {
-            return;
-          }
+        case 'BinaryExpression':
+          sortNodeArgumentValue(node, arg.left);
+          sortNodeArgumentValue(node, arg.right);
 
-          arg.arguments.forEach((arg) => {
-            sortNodeArgumentValue(node, arg);
-          });
-          break;
-        }
+          return;
         case 'ConditionalExpression':
           sortNodeArgumentValue(node, arg.consequent);
           sortNodeArgumentValue(node, arg.alternate);
 
           return;
-        case 'FunctionDeclaration':
-        case 'FunctionExpression':
-          sortNodeArgumentValue(node, arg.body);
-          break;
         case 'Literal':
           originalClassNamesValue = arg.value;
           start = arg.range[0] + 1;
@@ -225,10 +205,6 @@ export default createNamedRule<OptionList, MessageIds>({
 
           return;
         }
-        case 'Property':
-          sortNodeArgumentValue(node, arg.key);
-
-          break;
         case 'ReturnStatement':
           if (!arg.argument) {
             return;
@@ -388,6 +364,8 @@ export default createNamedRule<OptionList, MessageIds>({
             });
           } else if (expr.expression.type === 'CallExpression') {
             callExpressionListener(expr.expression);
+          } else {
+            sortNodeArgumentValue(node, expr.expression);
           }
         });
       }

@@ -185,7 +185,7 @@ tester.run('sort-classes', rule as any, {
       output: `<div class:px-12={false} class="${orderedClasses}"></div>`
     },
     {
-      code: `<div class={"${unorderedClasses}"}></div>`,
+      code: `<div class={"${unorderedClasses} "}></div>`,
       errors: [getError()],
       output: `<div class={"${orderedClasses}"}></div>`
     },
@@ -193,6 +193,17 @@ tester.run('sort-classes', rule as any, {
       code: `<div class="{"${unorderedClasses}"}"></div>`,
       errors: [getError()],
       output: `<div class="{"${orderedClasses}"}"></div>`
+    },
+    {
+      code: `<div class="{"${unorderedClasses}"}"></div>`,
+      errors: [getError()],
+      options: [{ removeDuplicates: false }],
+      output: `<div class="{"${orderedClasses}"}"></div>`
+    },
+    {
+      code: `<div class={"${unorderedClasses}" + "${unorderedClasses}"}></div>`,
+      errors: [getError(), getError()],
+      output: `<div class={"${orderedClasses}" + "${orderedClasses}"}></div>`
     },
     {
       code: `<div class={twMerge("${unorderedClasses}", variable)}></div>`,
@@ -278,6 +289,11 @@ const multipleSpaces = twMerge("${orderedClasses.replaceAll(' ', '   ')} ");
     {
       code: `<div class="${unorderedClasses}"></div>`,
       options: [{ config: { prefix: 'other' } }]
+    },
+    {
+      code: `const name = () => { const variants = '${unorderedClasses}'; }`,
+      filename: 'file.ts',
+      options: [{ declarations: { names: ['name'] } }]
     },
     {
       code: `clsx("${unorderedClasses}");`,
