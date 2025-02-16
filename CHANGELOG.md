@@ -1,5 +1,15 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 0.1.0-next.8
+
+### Minor Changes
+
+- Add `VariableDeclarator` listener in order to parse variables and similar. ([#25](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/25))
+
+### Patch Changes
+
+- Add support fort `BinaryExpressions` ([#25](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/25))
+
 ## 0.1.0-next.7
 
 ### Minor Changes
