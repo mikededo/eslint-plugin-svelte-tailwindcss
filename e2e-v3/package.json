@@ -1,0 +1,14 @@
+{
+  "name": "e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --format json",
+    "pretest": "bun run --cwd .. build && bun install",
+    "test": "vitest ."
+  },
+  "dependencies": {
+    "eslint-plugin-svelte-tailwindcss": "file:../",
+    "tailwindcss": "^3"
+  }
+}

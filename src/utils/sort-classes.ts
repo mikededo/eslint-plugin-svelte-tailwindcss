@@ -1,13 +1,6 @@
-import type { LegacyTailwindContext } from './types';
+import { createSyncFn } from 'synckit';
 
-type TransformerEnv = {
-  context: LegacyTailwindContext;
-  parsers?: any;
-  generateRules?: (
-    classes: Iterable<string>,
-    context: LegacyTailwindContext,
-  ) => [bigint][];
-};
+import { workerDir } from './dir';
 
 const bigSign = (value: bigint) =>
   Number(value > 0n) - Number(value < 0n);
@@ -28,44 +21,11 @@ const bigIntSorter = ([, a]: [string, bigint | null], [, z]: [string, bigint | n
   return bigSign(a - z);
 };
 
-const prefixCandidate = (
-  context: LegacyTailwindContext,
-  selector: string
-): string => {
-  const prefix = context.tailwindConfig.prefix;
-  return typeof prefix === 'function' ? prefix(selector) : prefix + selector;
-};
+const getClassOrderSync = createSyncFn<
+  (path: string, clases: string[]) => Promise<[string, bigint | null][]>
+>(workerDir);
 
-// Polyfill for older Tailwind CSS versions
-const getClassOrderPolyfill = (classes: string[], env: TransformerEnv) => {
-  // A list of utilities that are used by certain Tailwind CSS utilities but
-  // that don't exist on their own. This will result in them "not existing" and
-  // sorting could be weird since you still require them in order to make the
-  // host utitlies work properly. (Thanks Biology)
-  const parasiteUtilities = new Set([
-    prefixCandidate(env.context, 'group'),
-    prefixCandidate(env.context, 'peer')
-  ]);
-  const classNamesWithOrder: [string, bigint | null][] = [];
-
-  for (const className of classes) {
-    let order = env.generateRules?.(new Set([className]), env.context)
-      .sort(([a], [z]) => bigSign(z - a))[0]?.[0] ?? null;
-
-    if (order === null && parasiteUtilities.has(className)) {
-      // This will make sure that it is at the very beginning of the
-      // `components` layer which technically means 'before any
-      // components'.
-      order = env.context.layerOrder.components;
-    }
-
-    classNamesWithOrder.push([className, order]);
-  }
-
-  return classNamesWithOrder;
-};
-
-const sort = (className: string, env: TransformerEnv) => {
+export const sortClasses = (className: string, twConfig: string) => {
   if (typeof className !== 'string' || className === '') {
     return className;
   }
@@ -82,19 +42,14 @@ const sort = (className: string, env: TransformerEnv) => {
     classes.pop();
   }
 
-  const classNamesWithOrder = env.context.getClassOrder
-    ? env.context.getClassOrder(classes)
-    : getClassOrderPolyfill(classes, env);
-
-  return classNamesWithOrder
+  const result = getClassOrderSync(twConfig, classes)
     .sort(bigIntSorter)
     .map(([className]) => className)
     .reduce(
       (acc, className, i) => `${acc}${className}${whitespace[i] ?? ''}`,
       ''
     );
-};
 
-export const sortClasses = (unordered: string[], context: LegacyTailwindContext): string =>
-  sort(unordered.join(' '), { context });
+  return result;
+};
 

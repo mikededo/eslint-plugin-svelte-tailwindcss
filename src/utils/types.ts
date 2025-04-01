@@ -6,6 +6,10 @@ import type { SourceCode as ESLintSourceCode, Rule } from 'eslint';
 import type { AST, StyleContext, SvelteConfig } from 'svelte-eslint-parser';
 import type TS from 'typescript';
 
+export type ContextContainer = {
+  generateRules: () => any;
+  context: any;
+};
 export type LegacyTailwindContext = {
   layerOrder: { components: bigint };
   tailwindConfig: {

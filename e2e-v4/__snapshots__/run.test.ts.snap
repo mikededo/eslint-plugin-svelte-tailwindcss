@@ -1,0 +1,66 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`e2e > should lint with the config configuration > exit code 1`] = `0`;
+
+exports[`e2e > should lint with the config configuration > stderr 1`] = `
+"$ eslint .
+"
+`;
+
+exports[`e2e > should lint with the config configuration > stdout 1`] = `
+"
+/Users/miquel.dedomingo/Documents/personal/open-source/eslint-plugin-svelte-tailwindcss/e2e-v4/src/lib/components/square.svelte
+  3:1  warning  Using '@apply' requires setting style lang to postcss  svelte-tailwindcss/at-apply-require-postcss
+
+✖ 1 problem (0 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the \`--fix\` option.
+
+"
+`;
+
+exports[`e2e > should lint with the default configuration > exit code 1`] = `1`;
+
+exports[`e2e > should lint with the default configuration > stderr 1`] = `
+"$ eslint .
+error: script "lint" exited with code 1
+"
+`;
+
+exports[`e2e > should lint with the default configuration > stdout 1`] = `
+"
+/Users/miquel.dedomingo/Documents/personal/open-source/eslint-plugin-svelte-tailwindcss/e2e-v4/src/lib/components/button.svelte
+  19:4  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/Users/miquel.dedomingo/Documents/personal/open-source/eslint-plugin-svelte-tailwindcss/e2e-v4/src/lib/components/square.svelte
+  3:1  error  Using '@apply' requires setting style lang to postcss  svelte-tailwindcss/at-apply-require-postcss
+
+✖ 2 problems (2 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the \`--fix\` option.
+
+"
+`;
+
+exports[`e2e > should lint with the settings configuration > exit code 1`] = `1`;
+
+exports[`e2e > should lint with the settings configuration > stderr 1`] = `
+"$ eslint .
+error: script "lint" exited with code 1
+"
+`;
+
+exports[`e2e > should lint with the settings configuration > stdout 1`] = `
+"
+/Users/miquel.dedomingo/Documents/personal/open-source/eslint-plugin-svelte-tailwindcss/e2e-v4/src/lib/components/button.svelte
+  10:5  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+  10:5  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+  10:5  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+  19:4  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/Users/miquel.dedomingo/Documents/personal/open-source/eslint-plugin-svelte-tailwindcss/e2e-v4/src/lib/components/square.svelte
+  3:1  error  Using '@apply' requires setting style lang to postcss  svelte-tailwindcss/at-apply-require-postcss
+
+✖ 5 problems (5 errors, 0 warnings)
+  5 errors and 0 warnings potentially fixable with the \`--fix\` option.
+
+"
+`;

@@ -1,3 +1,5 @@
+import type { SVTPluginConfiguration } from './utils';
+
 import type { ESLint, Linter } from 'eslint';
 
 import { name as packageName, version } from '../package.json';
@@ -12,6 +14,7 @@ const plugin: ESLint.Plugin = {
 
 export default plugin;
 
+export type PluginSettings = SVTPluginConfiguration;
 export type RuleOptions = {
   [K in keyof RuleDefinitions]: RuleDefinitions[K]['defaultOptions'];
 };
