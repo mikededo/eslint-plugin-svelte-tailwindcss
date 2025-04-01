@@ -3,7 +3,7 @@ import { defineBuildConfig } from 'unbuild';
 export default defineBuildConfig({
   clean: true,
   declaration: true,
-  entries: ['src/index'],
+  entries: ['src/index', 'src/workers/config-v4.ts'],
   externals: [
     '@typescript-eslint/scope-manager',
     '@typescript-eslint/utils',
@@ -13,5 +13,8 @@ export default defineBuildConfig({
     'tailwindcss',
     'typescript'
   ],
-  rollup: { emitCJS: true }
+  rollup: {
+    emitCJS: true
+  }
 });
+

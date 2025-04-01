@@ -1,6 +1,6 @@
 export * from './ast';
-export * from './config';
 export * from './constants';
+export * from './dir';
 export * from './files';
 export * from './rules';
 export * from './settings';

@@ -17,6 +17,6 @@ export default [
     files: ['*.svelte', '**/*.svelte'],
     languageOptions: { parser: svelteParser },
     name: 'svelte-tailwindcss:base:svelte-setup',
-    rules
+    rules: rules as any
   }
 ] satisfies Linter.Config[];

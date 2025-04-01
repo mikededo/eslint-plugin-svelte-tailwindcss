@@ -1,0 +1,14 @@
+{
+  "name": "e2e-v4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "bun run --cwd .. build && bun install",
+    "test": "vitest ."
+  },
+  "dependencies": {
+    "eslint-plugin-svelte-tailwindcss": "file:../",
+    "tailwindcss": "^4"
+  }
+}

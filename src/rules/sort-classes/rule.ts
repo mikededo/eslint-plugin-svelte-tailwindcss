@@ -1,9 +1,7 @@
-import type { LegacyTailwindContext, ResolvedConfig, SVTPluginOptions } from '../../utils';
+import type { ContextContainer, SVTPluginOptions } from '../../utils';
 
 import type { TSESTree } from '@typescript-eslint/types';
 import type { AST } from 'svelte-eslint-parser';
-// @ts-expect-error Specific tailwindcss API
-import setupContextUtils from 'tailwindcss/lib/lib/setupContextUtils.js';
 
 import {
   createNamedRule,
@@ -16,12 +14,9 @@ import {
   getTemplateElementPrefix,
   getTemplateElementSuffix,
   isTsOrJsFile,
-  resolveConfig,
   SEP_REGEX,
   sortClasses
 } from '../../utils';
-
-const { createContext } = setupContextUtils;
 
 export type MessageIds = 'sort-classes';
 export type OptionList = Options[];
@@ -30,12 +25,12 @@ export type Options = Pick<
   'callees' | 'config' | 'declarations' | 'ignoredKeys' | 'monorepo' | 'removeDuplicates' | 'tags'
 >;
 
-const sortLiteral = (literal: TSESTree.Literal, context: LegacyTailwindContext): null | string => {
+const sortLiteral = (literal: TSESTree.Literal, twConfig: string): null | string => {
   if (!literal.value || typeof literal.value !== 'string') {
     return null;
   }
 
-  return sortClasses(literal.value?.split(' '), context);
+  return sortClasses(literal.value, twConfig);
 };
 
 /**
@@ -118,7 +113,7 @@ const removeDuplicatesOrOriginalWithSpaces = ({
   return { classes, spaces };
 };
 
-export const ContextCache = new WeakMap<ResolvedConfig, ReturnType<typeof createContext>>();
+export const ContextCache = new Map<string, ContextContainer>();
 
 export default createNamedRule<OptionList, MessageIds>({
   create(context) {
@@ -127,17 +122,6 @@ export default createNamedRule<OptionList, MessageIds>({
     const monorepo = getOption(context, 'monorepo');
     const twConfig = monorepo ? getMonorepoConfig(context) : getOption(context, 'config');
     const removeDuplicates = getOption(context, 'removeDuplicates');
-
-    const mergedConfig = resolveConfig(twConfig);
-    if (mergedConfig === null) {
-      throw new Error('Could not resolve TailwindCSS config');
-    }
-
-    const twContext = (
-      ContextCache.has(mergedConfig)
-        ? ContextCache
-        : ContextCache.set(mergedConfig, createContext(mergedConfig))
-    ).get(mergedConfig);
 
     type ValidDeclarator = { init: NonNullable<TSESTree.VariableDeclarator['init']> } & TSESTree.VariableDeclarator;
     const isValidDeclarator = (node: TSESTree.VariableDeclarator): node is ValidDeclarator => {
@@ -272,7 +256,7 @@ export default createNamedRule<OptionList, MessageIds>({
 
       const { classes, spaces } = removeDuplicatesOrOriginalWithSpaces({
         headSpace,
-        original: (sortClasses(classNames, twContext) ?? '').split(' '),
+        original: (sortClasses(classNames.join(' '), twConfig) ?? '').split(' '),
         removeDuplicates,
         tailSpace,
         whitespaces
@@ -344,7 +328,7 @@ export default createNamedRule<OptionList, MessageIds>({
           if (expr.expression.type === 'Literal') {
             // Sort the literal
             const sorted = removeDuplicatesOrOriginal(
-              sortLiteral(expr.expression, twContext) ?? '',
+              sortLiteral(expr.expression, twConfig) ?? '',
               removeDuplicates,
               i === node.value.length - 1
             );
