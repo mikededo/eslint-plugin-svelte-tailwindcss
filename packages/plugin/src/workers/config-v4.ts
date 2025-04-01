@@ -31,7 +31,7 @@ const pathToContextMap = createExpiringMap<null | string, ContextContainer>(10_0
  * the CSS file that uses them. However, we don't want missing files to prevent
  * everything from working so we'll let the error handler decide how to proceed.
  */
-function createLoader<T>({
+const createLoader = <T>({
   filepath,
   jiti,
   legacy,
@@ -41,10 +41,10 @@ function createLoader<T>({
   jiti: Jiti;
   legacy: boolean;
   onError: (id: string, error: unknown, resourceType: string) => T;
-}) {
+}) => {
   const cacheKey = `${+Date.now()}`;
 
-  async function loadFile(id: string, base: string, resourceType: string) {
+  const loadFile = async (id: string, base: string, resourceType: string) => {
     try {
       const resolved = resolveJsFrom(base, id);
 
@@ -55,7 +55,7 @@ function createLoader<T>({
     } catch (err) {
       return onError(id, err, resourceType);
     }
-  }
+  };
 
   if (legacy) {
     const baseDir = path.dirname(filepath);
@@ -66,7 +66,7 @@ function createLoader<T>({
     base,
     module: await loadFile(id, base, resourceType)
   });
-}
+};
 
 const getBaseDir = (filePath: string): string => filePath
   ? path.dirname(filePath)
