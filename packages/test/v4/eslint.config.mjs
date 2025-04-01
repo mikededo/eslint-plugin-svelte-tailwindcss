@@ -5,9 +5,9 @@ import svelteParser from 'svelte-eslint-parser';
 
 /**
  * @typedef {import('eslint').Linter.LintMessage} LintMessage
- * @typedef {import('../src/index.js').Rules} Rules
+ * @typedef {import('eslint-plugin-svelte-tailwindcss').Rules} Rules
  * @typedef {Partial<Record<`svelte-tailwindcss/${string}`, any>>} PluginRules
- * @typedef {Record<string, any>} SVTPluginOptions
+ * @typedef {import('eslint-plugin-svelte-tailwindcss').PluginSettings} PluginSettings
  */
 
 /**
@@ -15,7 +15,7 @@ import svelteParser from 'svelte-eslint-parser';
  *
  * @param {object} [options] - Configuration options.
  * @param {Partial<PluginRules>} [options.rules] - Custom linting rules.
- * @param {SVTPluginOptions} [options.settings] - Tailwind plugin settings.
+ * @param {PluginSettings} [options.settings] - Tailwind plugin settings.
  * @param {Partial<PluginRules>} [options.tsRules] - TypeScript-specific linting rules.
  * @returns {Promise<LintMessage[]>} The ESLint configuration array.
  */
@@ -37,7 +37,6 @@ const generateConfig = async ({ rules, settings, tsRules } = {}) => [
     }
   },
   {
-    // TODO: Fix/check configuration
     files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser
