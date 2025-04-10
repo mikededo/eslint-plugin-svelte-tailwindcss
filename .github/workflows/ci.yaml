@@ -21,7 +21,7 @@ jobs:
       - name: Lint
         run: bun lint
       - name: Typecheck
-        run: bun typecheck
+        run: bun plugin typecheck
       - name: Test
         run: bun plugin test:cov --watch=false
       # - name: Test e2e
