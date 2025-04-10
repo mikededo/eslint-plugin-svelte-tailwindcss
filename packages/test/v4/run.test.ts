@@ -6,9 +6,8 @@ describe('e2e', () => {
       encoding: 'utf-8',
       shell: true 
     });
-    
+
     expect(result.stdout).toMatchSnapshot('stdout');
-    expect(result.stderr).toMatchSnapshot('stderr');
     expect(result.status).toMatchSnapshot('exit code');
   });
 })

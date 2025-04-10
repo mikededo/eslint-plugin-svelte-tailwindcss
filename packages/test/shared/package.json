@@ -1,0 +1,9 @@
+{
+  "name": "@eslint-plugin-svelte-tailwindcss/test-shared",
+  "type": "module",
+  "private": true,
+  "exports": "./dist/index.mjs",
+  "devDependencies": {
+    "eslint-plugin-svelte-tailwindcss": "workspace:*"
+  }
+}

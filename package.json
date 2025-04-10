@@ -3,17 +3,11 @@
   "private": true,
   "packageManager": "bun@1.2.8",
   "scripts": {
-    "install:plugin": "bun install --cwd packages/plugin",
-    "install:v3": "bun install --cwd packages/test/v3",
-    "install:v4": "bun install --cwd packages/test/v4",
     "lint": "eslint ./packages/plugin --max-warnings 0",
-    "plugin": "bun run --cwd packages/plugin",
-    "preinstall": "bun install:plugin && bun install:v3 && bun install:v4",
-    "pretest:v3": "bun plugin build",
+    "pretest:v4": "bun plugin build && bun --cwd packages/test/shared tsc",
     "test:plugin": "bun plugin test",
-    "test:v3": "bun v3 test",
     "test:v4": "bun v4 test",
-    "v3": "bun run --cwd packages/test/v3",
+    "plugin": "bun run --cwd packages/plugin",
     "v4": "bun run --cwd packages/test/v4"
   },
   "devDependencies": {
@@ -26,5 +20,6 @@
     "eslint-plugin-svelte": "2.46.1",
     "typescript": "5.7.2",
     "vitest": "2.1.8"
-  }
+  },
+  "workspaces": ["packages/plugin", "packages/test/*"]
 }

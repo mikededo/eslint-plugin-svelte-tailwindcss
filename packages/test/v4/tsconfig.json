@@ -1,15 +1,11 @@
 {
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2020",
-    "lib": ["esnext"],
-    "module": "esnext",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "types": ["vitest/globals", "vite/client"],
-    "strict": true,
-    "strictNullChecks": true,
-    "esModuleInterop": true,
-    "skipDefaultLibCheck": true,
-    "skipLibCheck": true
-  }
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "@eslint-plugin-svelte-tailwindcss/test-shared": ["../../test/shared"]
+    },
+    "types": ["vitest/globals", "vite/client"]
+  },
 }

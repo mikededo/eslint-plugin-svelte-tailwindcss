@@ -1,13 +1,13 @@
 {
-  "name": "v4",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "lint": "eslint .",
-    "test": "vitest ."
-  },
-  "dependencies": {
-    "eslint-plugin-svelte-tailwindcss": "file:../../plugin",
-    "tailwindcss": "^4"
-  }
+	"name": "v4",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+        "lint": "eslint .",
+		"test": "vitest --watch=false"
+	},
+	"devDependencies": {
+		"@eslint-plugin-svelte-tailwindcss/test-shared": "workspace:*"
+	}
 }

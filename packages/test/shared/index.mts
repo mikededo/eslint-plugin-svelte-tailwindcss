@@ -1,27 +1,25 @@
-// @ts-check
+/* eslint-disable node/prefer-global/process */
 import tsParser from '@typescript-eslint/parser';
+import type { Linter } from 'eslint';
+import type { PluginSettings, Rules } from 'eslint-plugin-svelte-tailwindcss';
 import svelteTailwind from 'eslint-plugin-svelte-tailwindcss';
 import svelteParser from 'svelte-eslint-parser';
 
-/**
- * @typedef {import('eslint').Linter.LintMessage} LintMessage
- * @typedef {import('../src/index.js').Rules} Rules
- * @typedef {Partial<Record<`svelte-tailwindcss/${string}`, any>>} PluginRules
- * @typedef {import('../src/index.js').PluginSettings} Settings
- */
+// @ts-expect-error Any
+const baseConfig: Linter.Config[] = svelteTailwind.configs!.base;
+const baseRules = baseConfig[1].rules;
 
-/**
- * Generates ESLint configuration for Svelte and TypeScript projects.
- *
- * @param {object} [options] - Configuration options.
- * @param {Partial<PluginRules>} [options.rules] - Custom linting rules.
- * @param {Partial<Settings>} [options.settings] - Tailwind plugin settings.
- * @param {Partial<PluginRules>} [options.tsRules] - TypeScript-specific linting rules.
- * @returns {Promise<LintMessage[]>} The ESLint configuration array.
- */
-const generateConfig = async ({ rules, settings, tsRules } = {}) => [
-  // @ts-expect-error Configs is defined
-  ...svelteTailwind.configs.base,
+type Options = {
+  rules?: Partial<PrefixedRules>;
+  settings?: Partial<PluginSettings>;
+  tsRules?: Partial<PrefixedRules>;
+};
+type PrefixedRules = {
+  [K in keyof Rules as `svelte-tailwindcss/${K}`]: Rules[K];
+};
+
+const generateConfig = ({ rules, settings, tsRules }: Options = {}): Linter.Config[] => [
+  ...baseConfig,
   {
     files: ['src/**/*.svelte'],
     languageOptions: {
@@ -31,23 +29,26 @@ const generateConfig = async ({ rules, settings, tsRules } = {}) => [
         parser: tsParser
       }
     },
-    rules: rules ?? {},
+    rules: {
+      ...baseRules,
+      ...(rules ?? {})
+    },
     settings: {
       tailwindcss: {
-        config: 'tailwind.config.ts',
         ...settings
       }
     }
   },
   {
     files: ['src/**/*.ts'],
-    languageOptions: {
-      parser: tsParser
+    languageOptions: { parser: tsParser },
+    rules: {
+      ...baseRules,
+      ...(rules ?? {}),
+      ...(tsRules ?? {})
     },
-    rules: rules ?? tsRules ?? {},
     settings: {
       tailwindcss: {
-        config: 'tailwind.config.ts',
         ...settings
       }
     }
@@ -63,13 +64,13 @@ const config = generateConfig({
     'svelte-tailwindcss/at-apply-require-postcss': 'warn',
     'svelte-tailwindcss/sort-classes': ['error', {
       callees: ['twMerge'],
+      config: './src/app.css',
       declarations: { suffix: ['_CLASSES'] },
-      monorepo: false,
       removeDuplicates: true
     }]
-  },
+  }
 });
-const settings = await generateConfig({
+const settings = generateConfig({
   settings: {
     callees: ['twMerge'],
     declarations: { suffix: ['_CLASSES'] },
@@ -77,7 +78,9 @@ const settings = await generateConfig({
   },
   tsRules: {
     'svelte-tailwindcss/at-apply-require-postcss': 'warn',
-    'svelte-tailwindcss/sort-classes': 'error'
+    'svelte-tailwindcss/sort-classes': ['error', {
+      config: './src/app.css'
+    }]
   }
 });
 
