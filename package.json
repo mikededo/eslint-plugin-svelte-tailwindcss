@@ -1,14 +1,13 @@
 {
   "name": "root",
   "private": true,
-  "packageManager": "bun@1.2.8",
   "scripts": {
     "lint": "eslint ./packages/plugin --max-warnings 0",
-    "pretest:v4": "bun plugin build && bun --cwd packages/test/shared tsc",
-    "test:plugin": "bun plugin test",
-    "test:v4": "bun v4 test",
-    "plugin": "bun run --cwd packages/plugin",
-    "v4": "bun run --cwd packages/test/v4"
+    "pretest:v4": "pnpm plugin build && bun --cwd packages/test/shared tsc",
+    "test:plugin": "pnpm plugin test",
+    "test:v4": "pnpm v4 test",
+    "plugin": "pnpm run --cwd packages/plugin",
+    "v4": "pnpm run --cwd packages/test/v4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "3.11.2",
@@ -20,6 +19,5 @@
     "eslint-plugin-svelte": "2.46.1",
     "typescript": "5.7.2",
     "vitest": "2.1.8"
-  },
-  "workspaces": ["packages/plugin", "packages/test/*"]
+  }
 }
