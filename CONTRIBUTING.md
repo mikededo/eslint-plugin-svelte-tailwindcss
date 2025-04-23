@@ -8,7 +8,7 @@ in all your interactions with the project.
 
 ## Development
 
-This project uses `bun` to manage dependencies so make sure you are using the
+This project uses `pnpm` to manage dependencies so make sure you are using the
 same version as the one in `package.json`. I also recommend using [`ni`](https://github.com/antfu-collective/ni)
 and enabling `corepack` with `corepack enable`. This way you'll always be using
 the right package manager when you run commands. See more info regarding
@@ -16,7 +16,7 @@ the right package manager when you run commands. See more info regarding
 
 ### Creating a new rule
 
-To create a new rule, you can use the `bun gen:rule` command.
+To create a new rule, you can use the `pnpm gen:rule` command.
 
 ### Linting/formatting
 
@@ -74,7 +74,7 @@ based on `@antfu`'s article: [Why I don't use prettier](https://antfu.me/posts/w
 ### Testing
 
 This project is configured to use `vitest` for testing. Its strongly recommended
-that you also check for the coverage of the added code (with `bun test:cov`).
+that you also check for the coverage of the added code (with `pnpm -r test:cov`).
 Not only it can help you find out possible missing tests, but even redundant
 code that could be removed, safely. However, there's no required threshold for
 the coverage.
@@ -86,6 +86,6 @@ the coverage.
 - In case your PR is related to an issue, use one of the following [GitHub
   keywords](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)
   to link pull requests to the issues.
-- Create a changeset with your changes through `bun changeset`. Commit the
+- Create a changeset with your changes through `pnpm changeset`. Commit the
   changeset with `chore: add changeset` as the commit message.
 - Once approved, the PR will be merged using the `rebase` strategy.

@@ -114,7 +114,6 @@ export default antfu({
         'perfectionist/sort-imports': [
           'error',
           {
-            environment: 'bun',
             groups: [
               'style',
               'internal-type',
