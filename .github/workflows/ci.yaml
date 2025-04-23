@@ -17,11 +17,11 @@ jobs:
         with:
           node-version: 22
       - name: Install deps
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Lint
-        run: bun lint
+        run: pnpm lint
       - name: Typecheck
-        run: bun plugin typecheck
+        run: pnpm -r typecheck
       - name: Test
         run: bun plugin test:cov --watch=false
       # - name: Test e2e

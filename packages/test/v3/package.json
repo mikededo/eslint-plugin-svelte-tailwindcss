@@ -1,5 +1,5 @@
 {
-  "name": "v4",
+  "name": "v3",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@eslint-plugin-svelte-tailwindcss/test-shared": "workspace:*",
-    "tailwindcss": "^4"
+    "tailwindcss": "^3"
   }
 }
