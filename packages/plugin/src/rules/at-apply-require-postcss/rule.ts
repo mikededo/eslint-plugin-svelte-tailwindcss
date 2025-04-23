@@ -40,10 +40,7 @@ export default createNamedRule<OptionList, MessageIds>({
             return undefined;
           }
 
-          const atName = node.name;
-          if (atName === 'apply') {
-            return false;
-          }
+          return node.name === 'apply' ? false : undefined;
         });
         if (includesApply === undefined) {
           return;
