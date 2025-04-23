@@ -1,3 +1,6 @@
+// Since the rule uses node workers and it's a bit of a pain to work with, this
+// rule is tested in the test packages, in a kind of e2e
+
 import type { ContextContainer, SVTPluginOptions } from '../../utils';
 
 import type { TSESTree } from '@typescript-eslint/types';

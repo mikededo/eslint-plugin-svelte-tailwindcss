@@ -23,7 +23,7 @@ const bigIntSorter = ([, a]: [string, bigint | null], [, z]: [string, bigint | n
 
 const getClassOrderSync = createSyncFn<
   (path: string, clases: string[]) => Promise<[string, bigint | null][]>
->(workerDir, import.meta.env.MODE === 'test' ? { tsRunner: 'tsx' } : undefined);
+>(workerDir, import.meta.env?.MODE === 'test' ? { tsRunner: 'tsx' } : undefined);
 
 export const sortClasses = (className: string, twConfig: string) => {
   if (typeof className !== 'string' || className === '') {

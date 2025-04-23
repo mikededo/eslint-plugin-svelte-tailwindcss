@@ -2,21 +2,19 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "lint": "eslint ./packages/plugin --max-warnings 0",
-    "pretest:v4": "pnpm plugin build && bun --cwd packages/test/shared tsc",
-    "test:plugin": "pnpm plugin test",
-    "test:v4": "pnpm v4 test",
-    "plugin": "pnpm run --cwd packages/plugin",
-    "v4": "pnpm run --cwd packages/test/v4"
+    "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "3.11.2",
     "@changesets/cli": "2.27.10",
     "@svitejs/changesets-changelog-github-compact": "1.2.0",
     "@types/bun": "latest",
+    "@typescript-eslint/parser": "8.18.0",
     "eslint": "9.16.0",
     "eslint-plugin-format": "0.1.3",
+    "eslint-plugin-perfectionist": "4.12.0",
     "eslint-plugin-svelte": "2.46.1",
+    "svelte-eslint-parser": "1.1.3",
     "typescript": "5.7.2",
     "vitest": "2.1.8"
   }
