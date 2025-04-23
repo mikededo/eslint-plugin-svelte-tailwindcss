@@ -11,7 +11,9 @@ export default antfu({
     '.git',
     'coverage/',
     'dist/',
-    'node_modules/'
+    'node_modules/',
+    'packages/test/v3/src/',
+    'packages/test/v4/src/'
   ],
   jsonc: true,
   lessOpinionated: true,
