@@ -23,20 +23,20 @@ jobs:
         with:
           node-version: 22
       - name: Install
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: bun run build
+        run: pnpm run build
       - name: Capture New Release Version
         run: |
-          bun changeset status --output=release.json
+          pnpm changeset status --output=release.json
           echo "NEW_VERSION=$(jq -r '.releases[0].newVersion' release.json)" >> "$GITHUB_ENV"
           rm release.json
       - name: Create PR release or publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
-          version: bun changeset version
-          publish: bun changeset publish
+          version: pnpm changeset version
+          publish: bupnpm changeset publish
           commit: "chore(release): v${{env.NEW_VERSION}}"
           title: "chore(release): v${{env.NEW_VERSION}}"
         env:

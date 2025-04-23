@@ -39,8 +39,8 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "gen:rule": "bun run scripts/rule.ts",
-    "gen:update": "bun run scripts/update.ts",
+    "gen:rule": "pnpm run scripts/rule.ts",
+    "gen:update": "pnpm run scripts/update.ts",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --max-warnings 0 --fix",
     "test": "vitest .",
