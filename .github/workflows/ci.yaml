@@ -22,9 +22,7 @@ jobs:
         run: pnpm lint
       - name: Typecheck
         run: pnpm -r typecheck
-      - name: Test
-        run: bun plugin test:cov --watch=false
-      # - name: Test e2e
-      #   run: bun run --cwd e2e test:e2e --watch=false
       - name: Test build
-        run: bun run build
+        run: pnpm -F=eslint-plugin-svelte-tailwindcss build
+      - name: Test
+        run: pnpm -r test -w false

@@ -25,7 +25,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Build
-        run: pnpm run build
+        run: pnpm -F=eslint-plugin-svelte-tailwindcss build
       - name: Capture New Release Version
         run: |
           pnpm changeset status --output=release.json
