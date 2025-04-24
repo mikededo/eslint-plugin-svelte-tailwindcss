@@ -3,9 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
-    "paths": {
-      "eslint-plugin-svelte-tailwindcss": ["../../packages/plugin/src"]
-    },
     "emitDeclarationOnly": false,
     "outDir": "dist"
   },

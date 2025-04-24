@@ -3,7 +3,11 @@
   "type": "module",
   "private": true,
   "exports": "./dist/index.mjs",
+  "scripts": {
+    "build": "tsc"
+  },
   "devDependencies": {
+    "@types/node": "22.10.1",
     "eslint-plugin-svelte-tailwindcss": "workspace:*"
   }
 }
