@@ -129,6 +129,9 @@ importers:
 
   packages/test/shared:
     devDependencies:
+      '@types/node':
+        specifier: 22.10.1
+        version: 22.10.1
       eslint-plugin-svelte-tailwindcss:
         specifier: workspace:*
         version: link:../../plugin

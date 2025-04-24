@@ -23,6 +23,6 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
       - name: Test build
-        run: pnpm -F=eslint-plugin-svelte-tailwindcss build
+        run: pnpm -r build
       - name: Test
         run: pnpm -r test -w false
