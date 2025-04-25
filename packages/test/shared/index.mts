@@ -84,8 +84,9 @@ const settings = generateConfig({
   }
 });
 
+// TODO: Refactor into specific file
 export const parseStdOut = (value: string) => value.split('\n').map((l) => {
-  const iof = l.indexOf('/eslint-plugin-svelte-tailwindcss');
+  const iof = l.search(/\/v\d/);
   if (iof === -1) {
     return l;
   }
