@@ -4,14 +4,14 @@ exports[`e2e > should lint with the config configuration > exit code 1`] = `1`;
 
 exports[`e2e > should lint with the config configuration > stdout 1`] = `
 "
-/eslint-plugin-svelte-tailwindcss/packages/test/v4
+/v4
 > eslint . -c eslint.config.test.mjs
 
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+layout.svelte
+/v4/src/routes/+layout.svelte
   7:6  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+page.svelte
+/v4/src/routes/+page.svelte
    4:20  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
    5:21  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
    5:21  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
@@ -20,7 +20,7 @@ exports[`e2e > should lint with the config configuration > stdout 1`] = `
   18:6   error    Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
   20:1   warning  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/styles.ts
+/v4/src/routes/styles.ts
    3:7  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
   10:1  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
@@ -35,14 +35,14 @@ exports[`e2e > should lint with the default configuration > exit code 1`] = `1`;
 
 exports[`e2e > should lint with the default configuration > stdout 1`] = `
 "
-/eslint-plugin-svelte-tailwindcss/packages/test/v4
+/v4
 > eslint . -c eslint.config.test.mjs
 
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+layout.svelte
+/v4/src/routes/+layout.svelte
   7:6  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+page.svelte
+/v4/src/routes/+page.svelte
   17:6  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
   18:6  error  Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
   20:1  error  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
@@ -58,14 +58,14 @@ exports[`e2e > should lint with the settings configuration > exit code 1`] = `1`
 
 exports[`e2e > should lint with the settings configuration > stdout 1`] = `
 "
-/eslint-plugin-svelte-tailwindcss/packages/test/v4
+/v4
 > eslint . -c eslint.config.test.mjs
 
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+layout.svelte
+/v4/src/routes/+layout.svelte
   7:6  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/+page.svelte
+/v4/src/routes/+page.svelte
    4:20  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
    5:21  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
    5:21  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
@@ -74,7 +74,7 @@ exports[`e2e > should lint with the settings configuration > stdout 1`] = `
   18:6   error  Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
   20:1   error  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
 
-/eslint-plugin-svelte-tailwindcss/packages/test/v4/src/routes/styles.ts
+/v4/src/routes/styles.ts
    3:7  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
   10:1  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
