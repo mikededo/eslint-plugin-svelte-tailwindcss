@@ -1,5 +1,7 @@
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import pkg from 'enhanced-resolve';
 import fs, { readFileSync } from 'node:fs';
+
+const { CachedInputFileSystem, ResolverFactory } = pkg;
 
 const fileSystem = new CachedInputFileSystem(fs, 30_000);
 const jsonResolver = ResolverFactory.createResolver({
