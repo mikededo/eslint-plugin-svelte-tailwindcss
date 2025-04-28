@@ -3,6 +3,8 @@ import type { SVTPluginConfiguration, SVTRuleContext } from './types';
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
 
+import { getTailwindcssVersion } from './version';
+
 // TODO: Update when v4. Valid v3 config files
 const VALID_CONFIG_FILES = [
   'tailwind.config.js',
@@ -16,7 +18,7 @@ const VALID_CONFIG_FILES = [
 const DEFAULT_CONFIG: Required<SVTPluginConfiguration> = {
   callees: ['classnames', 'clsx', 'ctl', 'cva', 'tv'],
   classRegex: '^class(Name)?$',
-  config: 'tailwind.config.ts',
+  config: './src/app.css',
   declarations: {},
   ignoredKeys: ['compoundVariants', 'defaultVariants'],
   monorepo: false,
@@ -80,6 +82,10 @@ export const getMonorepoConfig = <
 >(
   context: SVTRuleContext<TOptions, TMessageIds>
 ): string => {
+  if (getTailwindcssVersion(context.filename).major === 4) {
+    throw new Error('The `monorepo` option is not allowed for v4');
+  }
+
   const config = getOption(context, 'config');
   const fileFolder = getParent(context.filename);
 

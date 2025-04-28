@@ -85,6 +85,7 @@ Here's the list of options available for the plugin:
 - `config`: A string representing the path of the Tailwind config file. By
   default checks the value from the `loadConfig` function provided from
   `tailwindcss`.
+  By `default` this option is set to `./src/app.css`.
 - `declarations`: Possible prefixes, suffixes and names that will be used to
   check if a variable declaration should be evaluated. For example, if you use an
   object to store variants, and you want the properties of that object to be
@@ -96,18 +97,10 @@ Here's the list of options available for the plugin:
   identify the tailwind config file. This should only be used when you have
   multiple tailwind config files in your project. If by any change you have a
   monorepo and yet you have one single tailwind config file, do not set this to
-  `true` and use the `config` option instead.
+  `true` and use the `config` option instead. **This option is not allowed when
+  using tailwindcss v4 or higher**
 - `removeDuplicates`: A boolean representing whether to remove duplicates from
   the given classes.
 - `tags`: An array of strings representing the names of the tags that should be
   checked for class sorting. Similar to `callees`, but using template strings.
 
-### Limitations with `config`
-
-Due to changes in how the settings or rule configurations are parsed (see:
-https://github.com/eslint/eslint/issues/17767), it is not possible to serialize
-functions as part of the configuration. This means that through the `config`
-settings/options it is not possible to parse the `plugins` option from Tailwind
-config.  
-If you want to use the `plugins`, define them in the `tailwind.config.{js,ts}`
-file.

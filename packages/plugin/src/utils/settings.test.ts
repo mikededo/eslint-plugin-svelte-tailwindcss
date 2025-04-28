@@ -12,6 +12,11 @@ vi.mock('path', async (importActual) => ({
   sep: '/'
 }));
 
+const mockGetTailwindcssVersion = vi.hoisted(vi.fn);
+vi.mock('./version', () => ({
+  getTailwindcssVersion: mockGetTailwindcssVersion
+}));
+
 describe('getOption', () => {
   it('returns a defined context option when defined', () => {
     expect(
@@ -39,6 +44,8 @@ describe('getMonorepoConfig', () => {
       .mockImplementation((val: string) => val.replace(/\/[^/]+$/, ''));
     vi.mocked(path.join)
       .mockImplementation((...parts: string[]) => parts.join('/'));
+
+    mockGetTailwindcssVersion.mockReturnValue({ major: 3 });
   });
 
   it('returns found config file in the same folder', () => {
@@ -82,5 +89,12 @@ describe('getMonorepoConfig', () => {
     }).toThrowError(
       'Unable to find config file.'
     );
+  });
+
+  it('should throw for Tailwindcss v4', () => {
+    mockGetTailwindcssVersion.mockReturnValue({ major: 4 });
+    expect(() => {
+      getMonorepoConfig({ filename: '' } as any);
+    }).toThrowError('The `monorepo` option is not allowed for v4');
   });
 });
