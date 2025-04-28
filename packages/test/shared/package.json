@@ -1,6 +1,7 @@
 {
   "name": "@eslint-plugin-svelte-tailwindcss/test-shared",
   "type": "module",
+  "version": "0.0.0",
   "private": true,
   "exports": {
     "./eslint": {
