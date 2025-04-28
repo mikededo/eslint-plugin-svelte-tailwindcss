@@ -8,6 +8,20 @@ exports[`e2e > should lint with the config configuration > stdout 1`] = `
 > eslint . -c eslint.config.test.mjs
 
 
+/v3/src/components/button/styles.ts
+  39:3  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/button/text-icon-button.svelte
+  19:9  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/checkbox/checkbox.svelte
+  15:9  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/container.svelte
+   8:6  error    Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
+   8:6  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
+  12:1  warning  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
+
 /v3/src/routes/+page.svelte
    4:20  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
    5:21  error    TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
@@ -21,8 +35,8 @@ exports[`e2e > should lint with the config configuration > stdout 1`] = `
    3:7  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
   10:1  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
-✖ 9 problems (8 errors, 1 warning)
-  8 errors and 1 warning potentially fixable with the \`--fix\` option.
+✖ 15 problems (13 errors, 2 warnings)
+  13 errors and 2 warnings potentially fixable with the \`--fix\` option.
 
  ELIFECYCLE  Command failed with exit code 1.
 "
@@ -36,13 +50,18 @@ exports[`e2e > should lint with the default configuration > stdout 1`] = `
 > eslint . -c eslint.config.test.mjs
 
 
+/v3/src/components/container.svelte
+   8:6  error  Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
+   8:6  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
+  12:1  error  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
+
 /v3/src/routes/+page.svelte
   17:6  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
   18:6  error  Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
   20:1  error  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
 
-✖ 3 problems (3 errors, 0 warnings)
-  3 errors and 0 warnings potentially fixable with the \`--fix\` option.
+✖ 6 problems (6 errors, 0 warnings)
+  6 errors and 0 warnings potentially fixable with the \`--fix\` option.
 
  ELIFECYCLE  Command failed with exit code 1.
 "
@@ -55,6 +74,20 @@ exports[`e2e > should lint with the settings configuration > stdout 1`] = `
 /v3
 > eslint . -c eslint.config.test.mjs
 
+
+/v3/src/components/button/styles.ts
+  39:3  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/button/text-icon-button.svelte
+  19:9  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/checkbox/checkbox.svelte
+  15:9  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
+
+/v3/src/components/container.svelte
+   8:6  error  Do not mix literal expressions with mustache expressions  svelte-tailwindcss/no-literal-mustache-mix
+   8:6  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
+  12:1  error  Using '@apply' requires setting style lang to postcss     svelte-tailwindcss/at-apply-require-postcss
 
 /v3/src/routes/+page.svelte
    4:20  error  TailwindCSS classes should be sorted                      svelte-tailwindcss/sort-classes
@@ -69,8 +102,8 @@ exports[`e2e > should lint with the settings configuration > stdout 1`] = `
    3:7  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
   10:1  error  TailwindCSS classes should be sorted  svelte-tailwindcss/sort-classes
 
-✖ 9 problems (9 errors, 0 warnings)
-  9 errors and 0 warnings potentially fixable with the \`--fix\` option.
+✖ 15 problems (15 errors, 0 warnings)
+  15 errors and 0 warnings potentially fixable with the \`--fix\` option.
 
  ELIFECYCLE  Command failed with exit code 1.
 "
