@@ -1,4 +1,4 @@
-import { parseStdOut } from '@eslint-plugin-svelte-tailwindcss/test-shared';
+import Utils from '@eslint-plugin-svelte-tailwindcss/test-shared/utils';
 import { spawnSync } from 'node:child_process';
 
 describe('e2e', () => {
@@ -8,7 +8,7 @@ describe('e2e', () => {
       shell: true
     });
 
-    expect(parseStdOut(result.stdout)).toMatchSnapshot('stdout');
+    expect(Utils.parseStdOut(result.stdout)).toMatchSnapshot('stdout');
     expect(result.status).toMatchSnapshot('exit code');
   });
 });
