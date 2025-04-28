@@ -2,7 +2,17 @@
   "name": "@eslint-plugin-svelte-tailwindcss/test-shared",
   "type": "module",
   "private": true,
-  "exports": "./dist/index.mjs",
+  "exports": {
+    "./eslint": {
+      "types": "./dist/eslint.d.mts",
+      "import": "./dist/eslint.mjs"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.mts",
+      "import": "./dist/utils.mjs"
+    }
+  },
+  "files": ["dist"],
   "scripts": {
     "build": "tsc"
   },

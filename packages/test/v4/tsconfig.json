@@ -3,6 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
-    "types": ["vitest/globals", "vite/client"]
+    "types": ["vitest/globals"]
   }
 }
