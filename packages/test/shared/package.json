@@ -13,7 +13,9 @@
       "import": "./dist/utils.mjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc"
   },
