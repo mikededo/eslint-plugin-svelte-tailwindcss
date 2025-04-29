@@ -37,7 +37,7 @@ export default [
 export default [
   ...svelteTailwindcss.configs['flat/base'],
   {
-    settings: { monorepo: true }
+    settings: { config: './src/global.css' }
   }
 ]
 ```
