@@ -152,6 +152,34 @@ const loadV4 = async (baseDir: string, pkgDir: string, entryPoint: null | string
         return {};
       }
     }),
+
+    // v4.0.0-alpha.25+
+    loadModule: createLoader({
+      filepath: entryPoint,
+      jiti,
+      legacy: false,
+      onError: (id, err, resourceType) => {
+        console.error(`Unable to load ${resourceType}: ${id}`, err);
+
+        if (resourceType === 'config') {
+          return {};
+        }
+
+        return () => {};
+      }
+    }),
+
+    // v4.0.0-alpha.24 and below
+    loadPlugin: createLoader({
+      filepath: entryPoint,
+      jiti,
+      legacy: true,
+      onError(id, err) {
+        console.error(`Unable to load plugin: ${id}`, err);
+        return () => {};
+      }
+    }),
+
     loadStylesheet: async (id: string, base: string) => {
       const resolved = resolveCssFrom(base, id);
 
