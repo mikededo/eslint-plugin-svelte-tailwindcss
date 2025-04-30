@@ -1,5 +1,11 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 1.1.0
+
+### Minor Changes
+
+- Fix missing `loadModule` ([#32](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/pull/32))
+
 ## 1.0.0
 
 ### Major Changes
