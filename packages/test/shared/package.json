@@ -20,7 +20,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@types/node": "22.10.1",
+    "@types/node": "24.5.2",
     "eslint-plugin-svelte-tailwindcss": "workspace:*"
   }
 }
