@@ -207,10 +207,6 @@ export type SVTSourceCode = {
     trailing: AST.Comment[];
   };
 
-  getJSDocComment: (node: SVTNodeOrToken) => AST.Comment | null;
-
-  isSpaceBetweenTokens: (first: AST.Token, second: AST.Token) => boolean;
-
   getLocFromIndex: (index: number) => AST.Position;
 
   getIndexFromLoc: (location: AST.Position) => number;
