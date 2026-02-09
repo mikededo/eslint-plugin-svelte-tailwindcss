@@ -1,5 +1,15 @@
 # eslint-plugin-svelte-tailwindcss
 
+## 2.0.0
+
+### Major Changes
+
+- Update to ESLint v10 ([`6bfe429`](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/commit/6bfe429e29b79ab1593a842c7044caa195262a47))
+
+### Minor Changes
+
+- Update dependencies ([`a87686f`](https://github.com/mikededo/eslint-plugin-svelte-tailwindcss/commit/a87686f82995cd62e1665aa5fecf0dd624ac68a6))
+
 ## 1.1.0
 
 ### Minor Changes
