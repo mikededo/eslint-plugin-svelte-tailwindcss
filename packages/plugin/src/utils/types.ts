@@ -302,8 +302,8 @@ export type SVTSourceCode = {
 };
 
 type SVTReportDescriptorLocation =
-  | { loc: { line: number; column: number } | AST.SourceLocation }
-  | { node: SVTNodeOrToken };
+  | { loc: { line: number; column: number } | AST.SourceLocation } |
+  { node: SVTNodeOrToken };
 type SVTReportDescriptorMessage = { message: string } | { messageId: string };
 
 type SVTReportDescriptorOptions = {

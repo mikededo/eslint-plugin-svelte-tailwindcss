@@ -4,7 +4,8 @@ import type { ContextContainer } from '../utils/types';
 
 import clearModule from 'clear-module';
 import escalade from 'escalade/sync';
-import { createJiti, type Jiti } from 'jiti';
+import { createJiti } from 'jiti';
+import type { Jiti } from 'jiti';
 // @ts-check
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
