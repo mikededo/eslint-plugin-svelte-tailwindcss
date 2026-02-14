@@ -1,3 +1,6 @@
+> ⚠️ I won't be updating this project anymore, and I strongly suggest switching
+> to [eslint-plugin-better-tailwindcss](https://www.npmjs.com/package/eslint-plugin-better-tailwindcss)
+
 ![Logo](.github/logo.png)
 
 An ESLint plugin for enforcing rules and ensuring consistency in Tailwind CSS.
